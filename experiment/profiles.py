@@ -28,6 +28,9 @@ class Profile:
     # pytest
     venv_python: Path | None = None
     pythonpath_subdir: str = "src"
+    # monorepo: run the test command from this subdir (vitest); targets are
+    # relativized to it. "" = repo root.
+    package_dir: str = ""
     # worktree prep
     prepare_files: dict[str, str] = field(default_factory=dict)
     prepare_symlinks: dict[str, Path] = field(default_factory=dict)  # wt-rel -> abs target
@@ -49,12 +52,23 @@ class Profile:
         )
 
     # --- execution -------------------------------------------------------
+    def test_cwd(self, worktree: Path) -> Path:
+        return worktree / self.package_dir if self.package_dir else worktree
+
+    def _rel_targets(self, targets: list[str]) -> list[str]:
+        """Strip the package_dir prefix so targets are relative to the runner cwd."""
+        if not self.package_dir:
+            return targets
+        pref = self.package_dir.rstrip("/") + "/"
+        return [t[len(pref):] if t.startswith(pref) else t for t in targets]
+
     def test_argv(self, worktree: Path, targets: list[str]) -> list[str]:
         if self.runner == "pytest":
             return [str(self.venv_python), "-m", "pytest", "-q",
                     "-p", "no:cacheprovider", *targets]
         if self.runner == "vitest":
-            return [str(worktree / "node_modules/.bin/vitest"), "run", *targets]
+            vitest = self.test_cwd(worktree) / "node_modules/.bin/vitest"
+            return [str(vitest), "run", *self._rel_targets(targets)]
         raise ValueError(f"unknown runner {self.runner!r}")
 
     def test_env_pythonpath(self, worktree: Path) -> Path | None:
@@ -64,10 +78,12 @@ class Profile:
 
     def test_cmd_str(self, test_files: list[str]) -> str:
         """Human-runnable command string for the agent prompt."""
-        files = " ".join(test_files)
         if self.runner == "pytest":
+            files = " ".join(test_files)
             return f"PYTHONPATH={self.pythonpath_subdir} {self.venv_python} -m pytest {files} -q"
-        return f"npx vitest run {files}"
+        files = " ".join(self._rel_targets(test_files))
+        prefix = f"cd {self.package_dir} && " if self.package_dir else ""
+        return f"{prefix}npx vitest run {files}"
 
 
 _HOME = Path("~").expanduser()
@@ -96,6 +112,19 @@ PROFILES: dict[str, Profile] = {
         pythonpath_subdir=".",
         prepare_files={
             "sqlglot/_version.py": '__version__ = "0.0.0"\n__version_tuple__ = (0, 0, 0)\n',
+        },
+    ),
+    "autopod-daemon": Profile(
+        name="autopod-daemon",
+        repo=_HOME / "repos/autopod",
+        runner="vitest",
+        package_dir="packages/daemon",
+        src_prefixes=("packages/daemon/src/",),
+        src_exts=(".ts", ".tsx"),
+        test_globs=("*.test.ts", "*.test.tsx"),  # colocated in src/ -> glob only
+        prepare_symlinks={
+            "node_modules": _HOME / "repos/autopod/node_modules",
+            "packages/daemon/node_modules": _HOME / "repos/autopod/packages/daemon/node_modules",
         },
     ),
     "portfolio-simulation": Profile(

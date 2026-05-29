@@ -1,0 +1,17 @@
+{
+  "have": {
+    "simple": 0,
+    "medium": 2,
+    "novel": 1
+  },
+  "want": {
+    "simple": 8,
+    "medium": 10,
+    "novel": 4
+  },
+  "tasks": [
+    142,
+    117,
+    36
+  ]
+}

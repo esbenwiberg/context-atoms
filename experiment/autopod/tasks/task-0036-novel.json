@@ -1,0 +1,28 @@
+{
+  "pr": 36,
+  "title": "fix: address security vulnerabilities from scan",
+  "body": "- CRITICAL: Add hostname regex validation to networkPolicy.allowedHosts schema\n  (profile.schema.ts) and a runtime safety guard in generateFirewallScript()\n  (docker-network-manager.ts) to prevent shell injection via malicious hostnames.\n\n- HIGH: Authenticate the /mcp/:sessionId endpoint with session-scoped HMAC tokens.\n  The session manager generates a token per session and injects it as an\n  Authorization: Bearer header into the container's escalation MCP server config.\n  The endpoint switches from auth:false to auth:'session-token' when a\n  SessionTokenIssuer is available.\n\n- HIGH: Tighten allowedResources enforcement in action-engine.ts \u2014 deny execution\n  when allowedResources is configured but the action provides no repo/org identifier,\n  closing a silent bypass.\n\n- MEDIUM: Wrap user-supplied task, acceptance criteria, and custom instructions in\n  explicit HTML comment boundary markers in system-instructions-generator.ts to\n  distinguish them from system instructions and resist prompt injection.\n\n- MEDIUM: Add SSRF protection to mcp-proxy-handler.ts \u2014 reject proxy requests\n  targeting private/loopback IP ranges (10.x, 172.16-31.x, 192.168.x, 127.x, ::1).\n\n- MEDIUM: Log PII regex errors in sanitize.ts instead of silently swallowing them;\n  previously a failed pattern could silently pass PII through unredacted with no\n  observable trace.\n\nhttps://claude.ai/code/session_01HvTRufNhsb1hQDhroHGhfh",
+  "stratum": "novel",
+  "base_sha": "ff8f8e8c826d470a8f77dc534afab12e1ae298a0",
+  "merge_sha": "05f6dcff8a3095b9e0c2f106bfd9e59ce8bd7a0b",
+  "test_files": [
+    "packages/daemon/src/sessions/system-instructions-generator.test.ts"
+  ],
+  "src_files": [
+    "packages/daemon/src/actions/action-engine.ts",
+    "packages/daemon/src/api/mcp-handler.ts",
+    "packages/daemon/src/api/mcp-proxy-handler.ts",
+    "packages/daemon/src/api/server.ts",
+    "packages/daemon/src/containers/docker-network-manager.ts",
+    "packages/daemon/src/index.ts",
+    "packages/daemon/src/sessions/session-manager.ts",
+    "packages/daemon/src/sessions/system-instructions-generator.ts"
+  ],
+  "loc": 135,
+  "red_check": {
+    "returncode": 1,
+    "n_failed": 1,
+    "n_error": 0,
+    "n_passed": 15
+  }
+}

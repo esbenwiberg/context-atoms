@@ -1,0 +1,21 @@
+{
+  "pr": 142,
+  "title": "fix(pods): preserve Codex compaction egress hosts",
+  "body": "Summary\n- Force Codex/OpenAI runtime provider hosts `chatgpt.com` and `*.chatgpt.com` even when `networkPolicy.replaceDefaults` is true.\n- Stop auto-injecting GitHub hosts from runtime defaults; GitHub remains profile-controlled.\n- Add the recovered spec and regression contract from `comparable-sparrow`.\n\nValidation\n- `npx pnpm --filter @autopod/daemon test -- runtime-network-defaults.test.ts`\n- `npx biome check packages/daemon/src/pods/runtime-network-defaults.ts packages/daemon/src/pods/runtime-network-defaults.test.ts`\n- `npx pnpm build`\n- `npx pnpm test`\n\nNote: `npx pnpm lint` currently fails on tracked `.speclint-cache/llm/*.json` formatting in fresh `origin/main`; that is unrelated to this PR.\n",
+  "stratum": "medium",
+  "base_sha": "56dae347039b88dfc88e094b819b34275534f805",
+  "merge_sha": "c4d5215f6bb154fd9f3d4c72a15a44ec97272875",
+  "test_files": [
+    "packages/daemon/src/pods/runtime-network-defaults.test.ts"
+  ],
+  "src_files": [
+    "packages/daemon/src/pods/runtime-network-defaults.ts"
+  ],
+  "loc": 156,
+  "red_check": {
+    "returncode": 1,
+    "n_failed": 2,
+    "n_error": 0,
+    "n_passed": 1
+  }
+}

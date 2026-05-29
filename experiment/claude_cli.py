@@ -42,10 +42,13 @@ def text_call(
         "--output-format", "json",
         "--allowedTools", "",  # no tools: pure transform
     ]
-    proc = subprocess.run(
-        args, input=prompt, capture_output=True, text=True,
-        cwd=str(cwd), timeout=timeout,
-    )
+    try:
+        proc = subprocess.run(
+            args, input=prompt, capture_output=True, text=True,
+            cwd=str(cwd), timeout=timeout,
+        )
+    except subprocess.TimeoutExpired:
+        return TextResult("", 0.0, 0, True, {"error": f"timeout after {timeout}s"})
     if proc.returncode != 0:
         return TextResult("", 0.0, 0, True, {"stderr": proc.stderr[:500]})
     try:

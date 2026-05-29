@@ -96,8 +96,9 @@ def run_tests(wt: Worktree, profile, test_targets: list[str],
     if pp is not None:
         env["PYTHONPATH"] = str(pp)
     args = profile.test_argv(wt.path, test_targets)
+    cwd = profile.test_cwd(wt.path)
     try:
-        r = subprocess.run(args, cwd=str(wt.path), env=env, capture_output=True,
+        r = subprocess.run(args, cwd=str(cwd), env=env, capture_output=True,
                            text=True, timeout=timeout)
         out = r.stdout + "\n" + r.stderr
         rc = r.returncode

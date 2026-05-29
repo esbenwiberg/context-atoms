@@ -1,0 +1,22 @@
+{
+  "pr": 117,
+  "title": "feat: --- title: \"Add runningAt timestamp to Pod and use it as the ...",
+  "body": "## Why\n\n---\ntitle: \"Add runningAt timestamp to Pod and use it as the ArtifactsTab filter pivot\"\ntouches:\n  - packages/shared/src/types/pod.ts\n  - packages/daemon/src/db/migrations/\n  - packages/daemon/src/pods/pod-repository.ts\n  - packages/daemon/src/pods/pod-manager.ts\n  - packages/desktop/Sources/AutopodClient/Types/PodResponse.swift\n  - packages/desktop/Sources/AutopodDesktop/Mapping/PodMapper.swift\n  - packages/desktop/Sources/AutopodUI/Models/Pod.swift\n  - packages/desktop/Sources/AutopodUI/Views/Detail/ArtifactsTab.swift\n  - packages/desktop/Tests/AutopodClientTests/PodMapperTests.swift\ndoes_not_touch:\n  - packages/daemon/src/pods/state-machine.ts\n  - packages/desktop/Sources/AutopodUI/Models/MockData.swift\n---\n\n## Task\n\nAdd a \\`runningAt\\` timestamp to the \\`Pod\\` type that is set exactly once \u2014 when the pod\ntransitions to \\`running\\` status for the first time in a provisioning run. Propagate the\nfield through the daemon API and all Swift layers, then use it as the pivot in\n\\`ArtifactsTab\\` to filter out files that predate the agent's execution (i.e. the git-cloned\nrepo tree). The existing \\`showAllFiles\\` toggle stays; only the filter's reference point\nchanges.\n\n## Why\n\nThe \\`ArtifactsTab\\` already has a \\`showAllFiles\\` toggle that is supposed to hide\npre-existing files. The pivot it uses is \\`pod.startedAt\\`, which marks when the pod entered\n\\`provisioning\\` \u2014 before the container boots and clones the repo. Because the git clone\nhappens ~20\u201330 s later, all cloned f",
+  "stratum": "medium",
+  "base_sha": "46cfbded0c9e73c0b035d90af23e84c61841c25a",
+  "merge_sha": "8813d7af06d5e4132a9748244b792d8457fcc3d5",
+  "test_files": [
+    "packages/daemon/src/pods/pod-repository.test.ts"
+  ],
+  "src_files": [
+    "packages/daemon/src/pods/pod-manager.ts",
+    "packages/daemon/src/pods/pod-repository.ts"
+  ],
+  "loc": 152,
+  "red_check": {
+    "returncode": 1,
+    "n_failed": 3,
+    "n_error": 0,
+    "n_passed": 41
+  }
+}

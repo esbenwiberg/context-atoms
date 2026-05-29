@@ -50,6 +50,13 @@ reproduce. The scored verdict lands in `experiment/RESULTS.md`.
 ## Status
 
 Design: stable after a multi-session exploration (2026-05-28).
-Experiment: harness built and executed against `pr-guardian`. Open question 1
-(pilot repo) resolved → pr-guardian; open question 5 (repo name) resolved → this
-repo, `context-atoms`.
+
+Experiment: **complete — the bet is NOT supported.** 250 ablation runs across 4
+repos (pr-guardian, sqlglot, portfolio-simulation, autopod), 2 languages, 2 models.
+Anchor-matched atom injection showed +0.0pp success delta everywhere (including the
+one benchmark that genuinely discriminates), never reduced exploration, and added
+cost. **Do not build the mechanism.** Full write-up: `experiment/FINDINGS.md`.
+
+The harness (pytest + vitest, single-package & monorepo) is reusable to re-test if
+one variable changes (weaker model, larger codebase, human-curated atoms). Open
+questions resolved: 1 (pilot → pr-guardian), 5 (name → `context-atoms`).
