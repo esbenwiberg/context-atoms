@@ -10,10 +10,10 @@ const defaultConfig: ArchmapConfig = {
   analyzers: [{ lang: "typescript", entry: "src/" }],
 };
 
-function makeTopology(file: string, ca: number, ce: number): Topology {
+function makeTopology(file: string, ca: number, ce: number, tca = 0): Topology {
   return {
     files: {
-      [file]: { ca, ce, dependents: Array.from({ length: ca }, (_, i) => `dep${i}.ts`) },
+      [file]: { ca, ce, tca, dependents: Array.from({ length: ca }, (_, i) => `dep${i}.ts`) },
     },
   };
 }

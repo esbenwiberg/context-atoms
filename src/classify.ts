@@ -1,6 +1,7 @@
 import type { ArchmapConfig } from "./config.js";
 import { matchOverride } from "./config.js";
 import type { Topology } from "./graph.js";
+import type { RiskScore } from "./risk.js";
 
 export type Klass = "leaf" | "branch" | "hub";
 
@@ -8,7 +9,9 @@ export interface Classification {
   file: string;
   class: Klass;
   ca: number;
+  tca: number;
   instability: number;
+  risk: RiskScore | null;
   reason: string;
   overridden: boolean;
 }
@@ -16,19 +19,25 @@ export interface Classification {
 export function classifyFile(
   file: string,
   topology: Topology,
-  config: ArchmapConfig
+  config: ArchmapConfig,
+  riskScores?: Map<string, RiskScore>
 ): Classification {
+  const riskScore = riskScores?.get(file) ?? null;
   const override = matchOverride(file, config.overrides);
+
   if (override) {
     const node = topology.files[file];
     const ca = node?.ca ?? 0;
+    const tca = node?.tca ?? 0;
     const ce = node?.ce ?? 0;
     const total = ca + ce;
     return {
       file,
       class: override.classification,
       ca,
+      tca,
       instability: total === 0 ? 0 : ce / total,
+      risk: riskScore,
       reason: override.reason,
       overridden: true,
     };
@@ -43,13 +52,15 @@ export function classifyFile(
       file,
       class: "leaf",
       ca: 0,
+      tca: 0,
       instability: 0,
+      risk: riskScore,
       reason: "not in dependency graph",
       overridden: false,
     };
   }
 
-  const { ca, ce } = node;
+  const { ca, tca, ce } = node;
   const total = ca + ce;
   const instability = total === 0 ? 0 : ce / total;
 
@@ -66,8 +77,10 @@ export function classifyFile(
     file,
     class: klass,
     ca,
+    tca,
     instability,
-    reason: `Ca=${ca} (${ca} dependent${ca === 1 ? "" : "s"})`,
+    risk: riskScore,
+    reason: `Ca=${ca} (${ca} direct, ${tca} transitive)`,
     overridden: false,
   };
 }

@@ -2,6 +2,8 @@ import { loadConfig } from "../config.js";
 import { classifyFile } from "../classify.js";
 import { getFreshTopology } from "../cache.js";
 import { buildTopology } from "../graph.js";
+import { buildChurnMap } from "../churn.js";
+import { computeRiskScores } from "../risk.js";
 import type { Classification } from "../classify.js";
 
 export async function classifyCommand(
@@ -16,7 +18,9 @@ export async function classifyCommand(
     process.stderr.write(cacheHit ? "(cache hit)\n" : "(topology rebuilt)\n");
   }
 
-  const result: Classification = classifyFile(file, topology, config);
+  const churnMap = buildChurnMap();
+  const riskScores = computeRiskScores(topology, churnMap);
+  const result: Classification = classifyFile(file, topology, config, riskScores);
 
   if (opts.json) {
     console.log(JSON.stringify(result, null, 2));
@@ -24,8 +28,11 @@ export async function classifyCommand(
     const instPct = (result.instability * 100).toFixed(0);
     console.log(`${result.file}`);
     console.log(`  class:       ${result.class}${result.overridden ? " (overridden)" : ""}`);
-    console.log(`  ca:          ${result.ca}`);
+    console.log(`  ca:          ${result.ca} direct, ${result.tca} transitive`);
     console.log(`  instability: ${instPct}%`);
+    if (result.risk) {
+      console.log(`  risk:        ${result.risk.risk}/100  (structural=${result.risk.structural}, churn=${result.risk.commits} commits/90d)`);
+    }
     console.log(`  reason:      ${result.reason}`);
   }
 }

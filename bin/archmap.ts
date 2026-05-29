@@ -4,6 +4,7 @@ import { scanCommand } from "../src/commands/scan.js";
 import { classifyCommand } from "../src/commands/classify.js";
 import { checkCommand } from "../src/commands/check.js";
 import { explainCommand } from "../src/commands/explain.js";
+import { riskCommand } from "../src/commands/risk.js";
 
 const program = new Command();
 
@@ -54,6 +55,16 @@ program
   .action(async (file, opts) => {
     const globalOpts = program.opts();
     await explainCommand(file, { ...opts, config: globalOpts.config });
+  });
+
+program
+  .command("risk")
+  .description("List riskiest files by combined topology + churn score")
+  .option("--top <n>", "Number of files to show (default: 10)")
+  .option("--json", "JSON output")
+  .action(async (opts) => {
+    const globalOpts = program.opts();
+    await riskCommand({ ...opts, config: globalOpts.config });
   });
 
 program.parseAsync(process.argv).catch((err) => {
