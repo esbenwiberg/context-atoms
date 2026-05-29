@@ -1,0 +1,29 @@
+{
+  "pr": 7630,
+  "title": "Feat(parser): handle `COLLATE` in nested types and `CAST` closes #7624",
+  "body": "I decided to handle `COLLATE` in this manner because in most cases it needs to be parsed as a binary operator.",
+  "stratum": "novel",
+  "base_sha": "5525f3fdec3c68ad374f39e8c30cdd38ee9b573b",
+  "merge_sha": "80e0929cc1f105fbd060493ed094d4308e946063",
+  "test_files": [
+    "tests/dialects/test_databricks.py",
+    "tests/dialects/test_postgres.py",
+    "tests/dialects/test_spark.py"
+  ],
+  "src_files": [
+    "sqlglot/expressions/datatypes.py",
+    "sqlglot/generator.py",
+    "sqlglot/generators/hive.py",
+    "sqlglot/parser.py",
+    "sqlglot/parsers/clickhouse.py",
+    "sqlglot/parsers/duckdb.py",
+    "sqlglot/parsers/hive.py"
+  ],
+  "loc": 93,
+  "red_check": {
+    "returncode": 1,
+    "n_failed": 3,
+    "n_error": 0,
+    "n_passed": 63
+  }
+}

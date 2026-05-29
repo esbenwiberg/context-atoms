@@ -1,0 +1,22 @@
+{
+  "pr": 7680,
+  "title": "Fix(mysql): joined table `UPDATE` syntax handling",
+  "body": "Fixes #7679\n",
+  "stratum": "medium",
+  "base_sha": "d6a53b4389673c6a29221cec7712ef7ea812b454",
+  "merge_sha": "c072a2635f8c20851c61f829633ad05d353599ae",
+  "test_files": [
+    "tests/dialects/test_mysql.py"
+  ],
+  "src_files": [
+    "sqlglot/parser.py",
+    "sqlglot/parsers/clickhouse.py"
+  ],
+  "loc": 39,
+  "red_check": {
+    "returncode": 1,
+    "n_failed": 1,
+    "n_error": 0,
+    "n_passed": 49
+  }
+}

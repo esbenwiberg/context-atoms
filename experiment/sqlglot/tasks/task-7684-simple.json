@@ -1,0 +1,21 @@
+{
+  "pr": 7684,
+  "title": "fix(postgres): parse schema-qualified COMMENT ON TYPE, VIEW, SEQUENCE, and INDEX",
+  "body": " \u2022 Fixes #7683\r\n  \u2022 Route `VIEW`, `SEQUENCE`, and `INDEX` through `_parse_table`; route `TYPE` through `_parse_table_parts(schema=True)`\r\n    instead of `_parse_id_var()`",
+  "stratum": "simple",
+  "base_sha": "c3fa1ced5d7fce8f3546cc01f9f604ca4ad41859",
+  "merge_sha": "07faa10723e822d2319f2f41c7099948336d7514",
+  "test_files": [
+    "tests/dialects/test_postgres.py"
+  ],
+  "src_files": [
+    "sqlglot/parser.py"
+  ],
+  "loc": 8,
+  "red_check": {
+    "returncode": 1,
+    "n_failed": 1,
+    "n_error": 0,
+    "n_passed": 25
+  }
+}

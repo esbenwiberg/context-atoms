@@ -1,0 +1,22 @@
+{
+  "pr": 7573,
+  "title": "fix(postgres): TRIM with UNNEST and ORDINALITY",
+  "body": "Fixes #7566",
+  "stratum": "medium",
+  "base_sha": "e4a2fdcdaf3e8ac423884e482191e002ab677235",
+  "merge_sha": "e078e5db72a7ee5fd6011e1e21285e4692befdbd",
+  "test_files": [
+    "tests/dialects/test_postgres.py"
+  ],
+  "src_files": [
+    "sqlglot/dialects/dialect.py",
+    "sqlglot/generator.py"
+  ],
+  "loc": 11,
+  "red_check": {
+    "returncode": 1,
+    "n_failed": 1,
+    "n_error": 0,
+    "n_passed": 24
+  }
+}

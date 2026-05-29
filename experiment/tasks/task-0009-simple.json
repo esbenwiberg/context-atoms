@@ -1,0 +1,21 @@
+{
+  "pr": 9,
+  "title": "Remove main/master from default blocked target branches",
+  "body": "## Summary\n- Only `release/*` branches are now blocked from auto-approve by default\n- Removes `main` and `master` from the default `blocked_target_branches` list \u2014 repos can still add them in their config if needed\n- Updates schema defaults, YAML defaults, docs, dashboard UI, and tests\n\n## Test plan\n- [ ] Verify PRs targeting `main`/`master` are no longer flagged as \"Target branch is in blocked list\"\n- [ ] Verify PRs targeting `release/*` branches still trigger human review\n\n\ud83e\udd16 Generated with [Claude Code](https://claude.com/claude-code)",
+  "stratum": "simple",
+  "base_sha": "ba4f432fb0509b0c667d28d30d5a9fb6ae9b1e7f",
+  "merge_sha": "bb915d49577a21e1ed7c0d9708cc9ae5e8896f37",
+  "test_files": [
+    "tests/test_decision.py"
+  ],
+  "src_files": [
+    "src/pr_guardian/config/schema.py"
+  ],
+  "loc": 15,
+  "red_check": {
+    "returncode": 1,
+    "n_failed": 0,
+    "n_error": 0,
+    "n_passed": 0
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "pr": 61,
+  "title": "feat: slug: ado-request-changes-drops-comment     reported_at: 2026...",
+  "body": "## Why\n\nslug: ado-request-changes-drops-comment\n    reported_at: 2026-05-20\n    severity: high\n    status: fix-ready\n    affected_packages:\n      - pr_guardian.platform\n      - pr_guardian.core\n      - pr_guardian.api\n    ---\n\n    ## Symptom\n\n    Azure DevOps PRs move to the expected request-changes / \"awaiting author\"\n    state, but no explanatory PR comment is posted.\n\n    Steps to reproduce:\n    1. Run an ADO review that resolves to a reject / request-changes decision, or\n       finish the wizard with the Decline action.\n    2. Open the ADO PR.\n    3. Observe that the PR state/vote/status changes, but the review text is absent.\n\n    Frequency: observed on tested ADO decline/request-changes paths.\n    Environment: ADO PR postback.\n    \u2026 +63 lines (ctrl + t to view transcript)\n    contract. After casting the \\`-5\\` reviewer vote, post \\`body\\` as a normal ADO PR\n    thread comment when \\`body.strip()\\` is non-empty. Reuse \\`post_comment(pr, body)\\`\n    unless ADO requires a different ordering; this keeps the implementation aligned\n    with the existing summary-comment API.\n\n    **Risk:** low to medium. The change is small and platform-specific, but it adds\n    a second ADO side effect to request-changes. If vote succeeds and comment fails,\n    the caller should surface/log the failure clearly; otherwise operators could\n    again see a correct PR state without the expected explanation.\n\n    **Alternatives considered:**\n    - Put the body into the reviewer vote payload. Reject",
+  "stratum": "medium",
+  "base_sha": "22787c2889687d55475d981262989b799e5e16a6",
+  "merge_sha": "09f71eb71954080407fb7a9a6e686c813b4e43c9",
+  "test_files": [
+    "tests/test_ado_adapter.py"
+  ],
+  "src_files": [
+    "src/pr_guardian/platform/ado.py"
+  ],
+  "loc": 88,
+  "red_check": {
+    "returncode": 1,
+    "n_failed": 0,
+    "n_error": 0,
+    "n_passed": 0
+  }
+}

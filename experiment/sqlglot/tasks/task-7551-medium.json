@@ -1,0 +1,23 @@
+{
+  "pr": 7551,
+  "title": "feat(snowflake)!: transpile DuckDB list() and list_distinct() [CLAUDE]",
+  "body": "## Summary\n\n- Map DuckDB's `list(col)` to Snowflake's `ARRAY_AGG(col)` via `rename_func` in the Snowflake generator TRANSFORMS.\n- Parse DuckDB's `list_distinct(col)` into `exp.ArrayDistinct` by adding the missing `LIST_DISTINCT` entry in the DuckDB parser FUNCTIONS.\n- Add `arraydistinct_sql` to the Snowflake generator to handle NULL semantics: DuckDB's `LIST_DISTINCT` strips NULLs while Snowflake's `ARRAY_DISTINCT` preserves them, so the output wraps with `ARRAY_COMPACT` when the source doesn't preserve NULLs (`check_null=False`).\n\n## Test plan\n\n- [x] `list(col)` transpiles DuckDB \u2192 Snowflake as `ARRAY_AGG(col)`\n- [x] `list_distinct(col)` transpiles DuckDB \u2192 Snowflake as `ARRAY_DISTINCT(ARRAY_COMPACT(col))`\n- [x] Snowflake `ARRAY_DISTINCT` round-trips correctly (check_null=True path)\n- [x] Snowflake `ARRAY_AGG` \u2192 DuckDB preserves existing null-filter behavior\n- [x] Full unit test suite passes",
+  "stratum": "medium",
+  "base_sha": "63f8dc6dfc19d4ae14984d393bc63532c1085e07",
+  "merge_sha": "e3fee4d2dc33b770622831490d2980a837718475",
+  "test_files": [
+    "tests/dialects/test_duckdb.py",
+    "tests/dialects/test_snowflake.py"
+  ],
+  "src_files": [
+    "sqlglot/generators/snowflake.py",
+    "sqlglot/parsers/duckdb.py"
+  ],
+  "loc": 35,
+  "red_check": {
+    "returncode": 1,
+    "n_failed": 1,
+    "n_error": 0,
+    "n_passed": 138
+  }
+}

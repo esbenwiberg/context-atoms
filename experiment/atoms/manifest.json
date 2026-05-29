@@ -1,0 +1,500 @@
+[
+  {
+    "file": "rationale/adr-001-inline-comment-mode-tristate-comment-mode-tri-state-.md",
+    "source": "docs/decisions/ADR-001-inline-comment-mode-tristate.md",
+    "kind": "rationale",
+    "claim": "comment_mode tri-state (none/summary/inline) replaced post_comment bool because the three posting modes are mutually exclusive, and two separate booleans would allow callers to set both true, creating an undefined combined state."
+  },
+  {
+    "file": "constraint/adr-001-inline-comment-mode-tristate-the-legacy-post-comment.md",
+    "source": "docs/decisions/ADR-001-inline-comment-mode-tristate.md",
+    "kind": "constraint",
+    "claim": "The legacy post_comment: bool field has no compatibility shim; callers passing it receive HTTP 422 and must migrate to comment_mode."
+  },
+  {
+    "file": "rationale/adr-002-sticky-trigger-split-decisionresult-was-split-into-s.md",
+    "source": "docs/decisions/ADR-002-sticky-trigger-split.md",
+    "kind": "rationale",
+    "claim": "DecisionResult was split into sticky_triggers and finding_reasons (replacing the flat override_reasons/trust_tier_reasons arrays) because verification mode needs to answer 'are the only remaining human-review reasons finding-derived and have those findings been fixed?' \u2014 a question unanswerable from a single flat array."
+  },
+  {
+    "file": "constraint/adr-002-sticky-trigger-split-the-sticky-triggers-kind-set-is.md",
+    "source": "docs/decisions/ADR-002-sticky-trigger-split.md",
+    "kind": "constraint",
+    "claim": "The sticky_triggers kind set is closed to exactly: new_dep, path_risk, hotspot, trust_tier, repo_risk, high_diff \u2014 adding any further kind requires an ADR amendment, not a silent enum extension."
+  },
+  {
+    "file": "constraint/adr-002-sticky-trigger-split-override-reasons-and-trust-tier.md",
+    "source": "docs/decisions/ADR-002-sticky-trigger-split.md",
+    "kind": "constraint",
+    "claim": "override_reasons and trust_tier_reasons must not exist on DecisionResult or the /api/dashboard/reviews/{id} payload \u2014 they were removed in the same brief that introduced sticky_triggers/finding_reasons with no transitional union field."
+  },
+  {
+    "file": "rationale/adr-003-finding-lifecycle-state-machine-findingstate-enum-wa.md",
+    "source": "docs/decisions/ADR-003-finding-lifecycle-state-machine.md",
+    "kind": "rationale",
+    "claim": "FindingState enum was introduced because a boolean dismissed column cannot distinguish 'developer fixed' from 'human dismissed', and two booleans produce undefined combined states."
+  },
+  {
+    "file": "constraint/adr-003-finding-lifecycle-state-machine-the-verified-state-i.md",
+    "source": "docs/decisions/ADR-003-finding-lifecycle-state-machine.md",
+    "kind": "constraint",
+    "claim": "The verified state is terminal: subsequent mark_fixed, mark_regressed, and mark_verified calls on an already-verified row must be silent no-ops to preserve audit history."
+  },
+  {
+    "file": "constraint/adr-003-finding-lifecycle-state-machine-the-fixed-and-regres.md",
+    "source": "docs/decisions/ADR-003-finding-lifecycle-state-machine.md",
+    "kind": "constraint",
+    "claim": "The fixed and regressed states are set exclusively by automated signature diffing on re-run and must never be set by user action."
+  },
+  {
+    "file": "rationale/adr-004-fix-by-inference-fix-inference-uses-strict-set-diffe.md",
+    "source": "docs/decisions/ADR-004-fix-by-inference.md",
+    "kind": "rationale",
+    "claim": "Fix inference uses strict set-difference on `file::category::agent` signatures rather than fuzzy or rename-aware matching."
+  },
+  {
+    "file": "constraint/adr-004-fix-by-inference-the-signature-schemes-file-category.md",
+    "source": "docs/decisions/ADR-004-fix-by-inference.md",
+    "kind": "constraint",
+    "claim": "The signature schemes \u2014 `file::category::agent` for findings and `sha256(pr_id::trigger_kind::trigger_source)[:16]` for sticky triggers \u2014 are a breaking-change boundary; altering either invalidates all historical lifecycle records."
+  },
+  {
+    "file": "rationale/adr-004-fix-by-inference-sticky-trigger-verification-records.md",
+    "source": "docs/decisions/ADR-004-fix-by-inference.md",
+    "kind": "rationale",
+    "claim": "Sticky-trigger verification records are stored in the `finding_dismissals` table using a synthesised SHA-256 signature rather than a dedicated table."
+  },
+  {
+    "file": "rationale/adr-005-final-auto-approval-gate-config-policy-is-a-distinct.md",
+    "source": "docs/decisions/ADR-005-final-auto-approval-gate.md",
+    "kind": "rationale",
+    "claim": "`config_policy` is a distinct `StickyTriggerKind` rather than reusing `path_risk` because config-consent violations must surface as a structural semantic in the wizard, audit payload, and future reviewers\u2014not be hidden behind path-risk semantics."
+  },
+  {
+    "file": "constraint/adr-005-final-auto-approval-gate-every-automated-pr-approval.md",
+    "source": "docs/decisions/ADR-005-final-auto-approval-gate.md",
+    "kind": "constraint",
+    "claim": "Every automated PR approval path must pass through the final auto-approval gate before any platform side effects (e.g. `approve_pr()`); manual human verdict approvals are explicitly exempt."
+  },
+  {
+    "file": "constraint/adr-005-final-auto-approval-gate-the-root-config-edit-policy.md",
+    "source": "docs/decisions/ADR-005-final-auto-approval-gate.md",
+    "kind": "constraint",
+    "claim": "The root config edit policy blocks auto-approval only when the current diff path is exactly `review.yml`; `old_path` rename-away and delete cases are intentionally out of scope until a future feature explicitly broadens the policy."
+  },
+  {
+    "file": "rationale/adr-006-split-verifier-agent-identity-the-architecture-inten.md",
+    "source": "docs/decisions/ADR-006-split-verifier-agent-identity.md",
+    "kind": "rationale",
+    "claim": "The `architecture_intent` agent is split into two identities (`intent` and `architecture`) because they require different anchor sources and opposing missing-anchor semantics."
+  },
+  {
+    "file": "constraint/adr-006-split-verifier-agent-identity-architecture-intent-mu.md",
+    "source": "docs/decisions/ADR-006-split-verifier-agent-identity.md",
+    "kind": "constraint",
+    "claim": "`architecture_intent` must remain a resolvable agent identity for historical re-review; fresh triage must not select it, but it cannot be deleted until historical reviews age out or a migration is explicitly designed."
+  },
+  {
+    "file": "constraint/adr-006-split-verifier-agent-identity-when-the-architecture-.md",
+    "source": "docs/decisions/ADR-006-split-verifier-agent-identity.md",
+    "kind": "constraint",
+    "claim": "When the `architecture` agent skips due to missing ground truth, it must return a PASS verdict with explanation text `\"no architecture context found - agent skipped\"` \u2014 no new `skipped` verdict enum or DB column may be introduced for this case."
+  },
+  {
+    "file": "constraint/architecture-alembic-migrations-are-append-only-merged-migra.md",
+    "source": "ARCHITECTURE.md",
+    "kind": "constraint",
+    "claim": "Alembic migrations are append-only: merged migrations must never be mutated; schema state is reconstructed by sequential replay."
+  },
+  {
+    "file": "constraint/architecture-the-mechanical-layer-must-never-make-llm-calls-.md",
+    "source": "ARCHITECTURE.md",
+    "kind": "constraint",
+    "claim": "The `mechanical/` layer must never make LLM calls; it is restricted to deterministic checks only, enforced by import-linter."
+  },
+  {
+    "file": "constraint/architecture-the-decision-engine-in-decision-is-the-only-pla.md",
+    "source": "ARCHITECTURE.md",
+    "kind": "constraint",
+    "claim": "The decision engine in `decision/` is the only place that mints verdicts; agents and mechanical gates return findings only."
+  },
+  {
+    "file": "constraint/claude-the-mechanical-layer-must-never-import-from-llm-deter.md",
+    "source": "CLAUDE.md",
+    "kind": "constraint",
+    "claim": "The `mechanical/` layer must never import from `llm/`; deterministic gates must remain deterministic, and any nuance they uncover must be escalated through triage rather than resolved via an LLM call."
+  },
+  {
+    "file": "rationale/claude-the-decision-layer-is-intentionally-io-free-no-databa.md",
+    "source": "CLAUDE.md",
+    "kind": "rationale",
+    "claim": "The `decision/` layer is intentionally IO-free (no database, no HTTP, no platform calls) so that the scoring and verdict logic can be unit-tested in milliseconds and reasoned about independently of integration state."
+  },
+  {
+    "file": "constraint/claude-alembic-migrations-are-append-only-and-sequentially-n.md",
+    "source": "CLAUDE.md",
+    "kind": "constraint",
+    "claim": "Alembic migrations are append-only and sequentially numbered; a merged migration must never be edited \u2014 new behavior requires a new migration file."
+  },
+  {
+    "file": "constraint/contributing-modules-in-src-pr-guardian-mechanical-must-neve.md",
+    "source": "CONTRIBUTING.md",
+    "kind": "constraint",
+    "claim": "Modules in `src/pr_guardian/mechanical/` must never make LLM calls \u2014 all checks are deterministic/static-analysis only."
+  },
+  {
+    "file": "constraint/contributing-every-new-agent-finding-type-requires-a-test-th.md",
+    "source": "CONTRIBUTING.md",
+    "kind": "constraint",
+    "claim": "Every new agent finding type requires a test that proves the evidence anchor format (file + line + quote) round-trips correctly through storage."
+  },
+  {
+    "file": "constraint/contributing-integration-tests-must-use-the-project-s-in-mem.md",
+    "source": "CONTRIBUTING.md",
+    "kind": "constraint",
+    "claim": "Integration tests must use the project's in-memory database mode rather than mocking the database layer."
+  },
+  {
+    "file": "constraint/readme-pr-guardian-never-auto-merges-it-only-votes-approve-a.md",
+    "source": "README.md",
+    "kind": "constraint",
+    "claim": "PR Guardian never auto-merges; it only votes approve and posts a summary comment, leaving the author to click merge."
+  },
+  {
+    "file": "rationale/readme-pr-guardian-is-a-hosted-webhook-receiving-service-not.md",
+    "source": "README.md",
+    "kind": "rationale",
+    "claim": "PR Guardian is a hosted webhook-receiving service, not a CI step, so it runs independently of the repo's own pipeline."
+  },
+  {
+    "file": "constraint/readme-ai-agents-may-only-report-a-detected-certainty-when-t.md",
+    "source": "README.md",
+    "kind": "constraint",
+    "claim": "AI agents may only report a 'detected' certainty when they can cite concrete evidence; unsubstantiated claims must be downgraded to 'suspected' or 'uncertain'."
+  },
+  {
+    "file": "constraint/00-overview-pr-guardian-never-auto-merges-a-pr-it-only-votes.md",
+    "source": "docs/plan/00-overview.md",
+    "kind": "constraint",
+    "claim": "PR Guardian never auto-merges a PR; it only votes approve and posts a summary comment, leaving the author to click merge."
+  },
+  {
+    "file": "constraint/00-overview-agent-certainty-is-a-three-value-enum-detected-s.md",
+    "source": "docs/plan/00-overview.md",
+    "kind": "constraint",
+    "claim": "Agent certainty is a three-value enum (detected/suspected/uncertain), not a float, and the decision engine rejects any 'detected' claim that lacks supporting evidence."
+  },
+  {
+    "file": "constraint/00-overview-a-repo-s-static-risk-class-standard-elevated-cri.md",
+    "source": "docs/plan/00-overview.md",
+    "kind": "constraint",
+    "claim": "A repo's static risk class (standard/elevated/critical) hard-gates auto-approve: elevated repos only auto-approve trivial PRs, and critical repos never auto-approve."
+  },
+  {
+    "file": "constraint/01-philosophy-guardian-may-only-vote-approve-and-post-a-summ.md",
+    "source": "docs/plan/01-philosophy.md",
+    "kind": "constraint",
+    "claim": "Guardian may only vote approve and post a summary comment; it must never trigger an automatic merge \u2014 the author always clicks merge."
+  },
+  {
+    "file": "rationale/01-philosophy-agents-use-certainty-enums-detected-suspected-.md",
+    "source": "docs/plan/01-philosophy.md",
+    "kind": "rationale",
+    "claim": "Agents use certainty enums (`detected` / `suspected` / `uncertain`) instead of confidence floats because the decision engine must be able to validate that each claim is backed by structured evidence."
+  },
+  {
+    "file": "constraint/01-philosophy-any-mechanical-gate-hard-fail-must-block-the-p.md",
+    "source": "docs/plan/01-philosophy.md",
+    "kind": "constraint",
+    "claim": "Any mechanical gate hard-fail must block the PR and skip all AI agents \u2014 agents are only invoked after all mechanical checks pass."
+  },
+  {
+    "file": "rationale/01b-discovery-stage-0-discovery-was-introduced-as-an-explici.md",
+    "source": "docs/plan/01b-discovery.md",
+    "kind": "rationale",
+    "claim": "Stage 0 Discovery was introduced as an explicit first step because language detection, config loading, and diff parsing were previously scattered across later stages, creating a sequencing contradiction where Stage 1 (Mechanical Gates) needed the language map before Stage 2 (where detection was defined) had run."
+  },
+  {
+    "file": "constraint/01b-discovery-language-detection-must-use-file-extension-loo.md",
+    "source": "docs/plan/01b-discovery.md",
+    "kind": "constraint",
+    "claim": "Language detection must use file-extension lookup only \u2014 no file content parsing, no heuristics \u2014 and config/data formats (yaml, json, markdown) must be excluded from the `cross_stack` flag, which counts only RUNTIME_LANGUAGES."
+  },
+  {
+    "file": "constraint/01b-discovery-the-dependency-graph-used-for-blast-radius-com.md",
+    "source": "docs/plan/01b-discovery.md",
+    "kind": "constraint",
+    "claim": "The dependency graph used for blast-radius computation must never be computed per-PR; it must be a pre-computed nightly lookup from the database, with an empty-consumers fallback when no graph exists."
+  },
+  {
+    "file": "rationale/02-mechanical-gates-mechanical-gates-are-designed-to-complet.md",
+    "source": "docs/plan/02-mechanical-gates.md",
+    "kind": "rationale",
+    "claim": "Mechanical gates are designed to complete in under 2 minutes and run before AI agents are invoked, so any hard failure blocks the PR without spending LLM budget."
+  },
+  {
+    "file": "constraint/02-mechanical-gates-gitleaks-secret-detection-is-a-zero-tole.md",
+    "source": "docs/plan/02-mechanical-gates.md",
+    "kind": "constraint",
+    "claim": "Gitleaks secret detection is a zero-tolerance hard block \u2014 any detected secret immediately blocks the PR with no severity threshold and no exceptions."
+  },
+  {
+    "file": "constraint/02-mechanical-gates-supply-chain-dependency-scanning-is-cond.md",
+    "source": "docs/plan/02-mechanical-gates.md",
+    "kind": "constraint",
+    "claim": "Supply chain dependency scanning is conditional: it only runs when package.json, requirements.txt, or *.csproj files are part of the PR diff."
+  },
+  {
+    "file": "rationale/03-triage-the-triage-engine-is-deterministic-rule-based-code.md",
+    "source": "docs/plan/03-triage.md",
+    "kind": "rationale",
+    "claim": "The triage engine is deterministic rule-based code (not an AI agent) to avoid paying agent invocation costs on low-risk PRs."
+  },
+  {
+    "file": "constraint/03-triage-risk-tier-classification-must-use-change-profile-a.md",
+    "source": "docs/plan/03-triage.md",
+    "kind": "constraint",
+    "claim": "Risk tier classification must use change_profile and blast_radius as primary signals; line count is only a tiebreaker within the same tier, never the primary driver."
+  },
+  {
+    "file": "constraint/03-triage-path-risk-config-critical-paths-safe-paths-acts-as.md",
+    "source": "docs/plan/03-triage.md",
+    "kind": "constraint",
+    "claim": "Path risk config (critical_paths / safe_paths) acts as a floor/ceiling applied after base tier calculation, not a replacement for the triage algorithm."
+  },
+  {
+    "file": "constraint/04-ai-agents-agent-output-must-never-include-a-risk-score-fi.md",
+    "source": "docs/plan/04-ai-agents.md",
+    "kind": "constraint",
+    "claim": "Agent output must never include a risk_score field; numeric scoring is derived deterministically by the decision engine from structured findings."
+  },
+  {
+    "file": "rationale/04-ai-agents-the-certainty-field-on-findings-is-an-enum-dete.md",
+    "source": "docs/plan/04-ai-agents.md",
+    "kind": "rationale",
+    "claim": "The certainty field on findings is an enum (detected | suspected | uncertain) rather than a float probability to avoid unreliable LLM-generated numeric confidence values."
+  },
+  {
+    "file": "rationale/05-decision-engine-the-decision-engine-computes-risk-scores-.md",
+    "source": "docs/plan/05-decision-engine.md",
+    "kind": "rationale",
+    "claim": "The decision engine computes risk scores deterministically from structured findings rather than asking LLMs to return numeric confidence values."
+  },
+  {
+    "file": "constraint/05-decision-engine-the-decision-engine-must-validate-and-pot.md",
+    "source": "docs/plan/05-decision-engine.md",
+    "kind": "constraint",
+    "claim": "The decision engine must validate and potentially downgrade agent certainty claims: 'detected' requires 2+ evidence signals and 'suspected' requires 1+ signal, otherwise the claim is silently downgraded one level."
+  },
+  {
+    "file": "constraint/05-decision-engine-auto-approve-means-guardian-votes-approve.md",
+    "source": "docs/plan/05-decision-engine.md",
+    "kind": "constraint",
+    "claim": "Auto-approve means Guardian votes approve and posts a summary comment only \u2014 Guardian never merges a PR automatically; the author always performs the final merge action."
+  },
+  {
+    "file": "constraint/06-multi-language-tools-that-require-a-full-project-build-do.md",
+    "source": "docs/plan/06-multi-language.md",
+    "kind": "constraint",
+    "claim": "Tools that require a full project build (dotnet build, tsc --noEmit) must NOT be invoked in-process by the mechanical runner \u2014 Guardian consumes those results from the repo's own CI pipeline via platform API status checks."
+  },
+  {
+    "file": "rationale/06-multi-language-agent-prompts-are-composed-at-runtime-by-c.md",
+    "source": "docs/plan/06-multi-language.md",
+    "kind": "rationale",
+    "claim": "Agent prompts are composed at runtime by concatenating a universal base prompt with per-language sections, so adding support for a new language requires only new prompt files and config \u2014 no code changes."
+  },
+  {
+    "file": "constraint/06-multi-language-certain-language-combinations-are-hard-cod.md",
+    "source": "docs/plan/06-multi-language.md",
+    "kind": "constraint",
+    "claim": "Certain language combinations are hard-coded risk amplifiers in the decision engine: any SQL, Terraform/Bicep, or Dockerfile presence must always trigger the security agent; cross-stack PRs (>1 runtime language) must bump risk tier one level; and PRs touching >3 languages must be rated HIGH."
+  },
+  {
+    "file": "rationale/07-architecture-a-thin-100-line-llm-abstraction-with-three-c.md",
+    "source": "docs/plan/07-architecture.md",
+    "kind": "rationale",
+    "claim": "A thin ~100-line LLM abstraction with three concrete implementations was chosen over LiteLLM because only three providers are needed and LiteLLM pulls in 50+ packages."
+  },
+  {
+    "file": "constraint/07-architecture-application-code-must-not-import-any-cloud-p.md",
+    "source": "docs/plan/07-architecture.md",
+    "kind": "constraint",
+    "claim": "Application code must not import any cloud-provider hosting SDK so the same Docker image runs on Azure Container Apps, on-prem Docker, and any k8s cluster."
+  },
+  {
+    "file": "rationale/07-architecture-all-review-orchestration-is-in-process-via-a.md",
+    "source": "docs/plan/07-architecture.md",
+    "kind": "rationale",
+    "claim": "All review orchestration is in-process via asyncio; core/queue.py is a thin asyncio task manager rather than an external message queue."
+  },
+  {
+    "file": "rationale/08-implementation-pr-guardian-deliberately-uses-an-in-proces.md",
+    "source": "docs/plan/08-implementation.md",
+    "kind": "rationale",
+    "claim": "PR Guardian deliberately uses an in-process asyncio queue for concurrency and dedup instead of an external message broker."
+  },
+  {
+    "file": "constraint/08-implementation-risk-tier-classification-must-not-use-line.md",
+    "source": "docs/plan/08-implementation.md",
+    "kind": "constraint",
+    "claim": "Risk tier classification must not use line counts; tiers must be driven by change_profile (semantic type of change) and blast_radius."
+  },
+  {
+    "file": "constraint/08-implementation-the-decision-engine-must-never-trigger-an-.md",
+    "source": "docs/plan/08-implementation.md",
+    "kind": "constraint",
+    "claim": "The decision engine must never trigger an auto-merge; the maximum automated action is posting a review comment or approving a PR."
+  },
+  {
+    "file": "constraint/09-operations-scheduled-maintenance-tasks-hotspot-refresh-he.md",
+    "source": "docs/plan/09-operations.md",
+    "kind": "constraint",
+    "claim": "Scheduled maintenance tasks (hotspot refresh, health check, mutation testing) run inside the Guardian service process \u2014 no external cron or job runner is needed."
+  },
+  {
+    "file": "constraint/09-operations-when-a-pr-touches-files-in-a-module-whose-muta.md",
+    "source": "docs/plan/09-operations.md",
+    "kind": "constraint",
+    "claim": "When a PR touches files in a module whose mutation survival score is below 60%, the test quality agent must receive extra context about that module's coverage gap."
+  },
+  {
+    "file": "rationale/09-operations-feedback-and-human-override-data-are-stored-in.md",
+    "source": "docs/plan/09-operations.md",
+    "kind": "rationale",
+    "claim": "Feedback and human-override data are stored in PostgreSQL (same database as reviews and findings) rather than in flat files, because the dashboard queries them directly with no file-sync step."
+  },
+  {
+    "file": "rationale/10-assessment-the-decision-engine-derives-risk-scores-determ.md",
+    "source": "docs/plan/10-assessment.md",
+    "kind": "rationale",
+    "claim": "The decision engine derives risk scores deterministically from findings rather than asking an LLM to generate a score."
+  },
+  {
+    "file": "constraint/10-assessment-when-an-agent-reports-saw-full-context-false-t.md",
+    "source": "docs/plan/10-assessment.md",
+    "kind": "constraint",
+    "claim": "When an agent reports saw_full_context: false, the decision engine must treat that agent's output as untrusted."
+  },
+  {
+    "file": "constraint/10-assessment-webhook-deduplication-uses-the-composite-key-r.md",
+    "source": "docs/plan/10-assessment.md",
+    "kind": "constraint",
+    "claim": "Webhook deduplication uses the composite key (repo, pr_id, head_sha), and a new push to the same PR must cancel the in-flight review and restart from scratch."
+  },
+  {
+    "file": "rationale/11-external-api-and-auth-github-app-auth-is-preferred-over-p.md",
+    "source": "docs/plan/11-external-api-and-auth.md",
+    "kind": "rationale",
+    "claim": "GitHub App auth is preferred over PATs because it provides an org-owned identity with short-lived rotating tokens, a 3\u00d7 higher rate limit (15k vs 5k req/hr), and granular per-repo permission scoping."
+  },
+  {
+    "file": "constraint/11-external-api-and-auth-the-ado-adapter-must-attempt-servic.md",
+    "source": "docs/plan/11-external-api-and-auth.md",
+    "kind": "constraint",
+    "claim": "The ADO adapter must attempt service-principal Bearer auth before PAT fallback: use SP if ADO_CLIENT_ID + ADO_TENANT_ID + ADO_CLIENT_SECRET are all set, fall back to PAT if only ADO_PAT is set, and error if neither is present."
+  },
+  {
+    "file": "rationale/11-external-api-and-auth-fastapi-azure-auth-is-the-recommend.md",
+    "source": "docs/plan/11-external-api-and-auth.md",
+    "kind": "rationale",
+    "claim": "`fastapi-azure-auth` is the recommended library for Entra ID JWT validation over manual PyJWT because it handles OIDC discovery, JWKS key rotation, and nonce quirks out of the box."
+  },
+  {
+    "file": "rationale/pr-guardian-design-agent-findings-use-a-detected-suspected-u.md",
+    "source": "docs/plan/pr-guardian-design.md",
+    "kind": "rationale",
+    "claim": "Agent findings use a `detected`/`suspected`/`uncertain` certainty enum instead of a confidence float so the decision engine can structurally enforce that agents show evidence before claiming high certainty."
+  },
+  {
+    "file": "constraint/pr-guardian-design-guardian-must-never-auto-merge-its-maximu.md",
+    "source": "docs/plan/pr-guardian-design.md",
+    "kind": "constraint",
+    "claim": "Guardian must never auto-merge; its maximum autonomous action is to cast an approval vote and post a summary comment, leaving the merge action to the PR author."
+  },
+  {
+    "file": "constraint/pr-guardian-design-if-any-agent-reports-saw-full-context-fal.md",
+    "source": "docs/plan/pr-guardian-design.md",
+    "kind": "constraint",
+    "claim": "If any agent reports `saw_full_context = false` in its `evidence_basis`, the PR must be escalated to human review regardless of other verdict values, because an agent that lacked full context cannot be trusted when it produces no findings."
+  },
+  {
+    "file": "constraint/pr-guardian-overview-the-decision-engine-must-auto-approve-p.md",
+    "source": "docs/plan/pr-guardian-overview.md",
+    "kind": "constraint",
+    "claim": "The decision engine must auto-approve PRs but must never auto-merge them; the author always performs the merge."
+  },
+  {
+    "file": "rationale/pr-guardian-overview-agent-findings-use-certainty-enums-dete.md",
+    "source": "docs/plan/pr-guardian-overview.md",
+    "kind": "rationale",
+    "claim": "Agent findings use certainty enums (detected/suspected/uncertain) instead of confidence floats so the decision engine can validate and downgrade unsubstantiated claims."
+  },
+  {
+    "file": "rationale/pr-guardian-overview-pr-guardian-runs-as-a-hosted-container-.md",
+    "source": "docs/plan/pr-guardian-overview.md",
+    "kind": "rationale",
+    "claim": "PR Guardian runs as a hosted container service outside CI pipelines so it consumes zero pipeline agents and can maintain a persistent cross-repo feedback loop."
+  },
+  {
+    "file": "rationale/tiered-trust-trust-tier-classification-uses-a-path-first-str.md",
+    "source": "docs/plan/tiered-trust.md",
+    "kind": "rationale",
+    "claim": "Trust tier classification uses a path-first strategy with LLM-only escalation because path patterns are deterministic, zero-cost, and auditable, while LLM agents handle cases where naming conventions fail (e.g., auth logic in src/utils/helpers.py)."
+  },
+  {
+    "file": "constraint/tiered-trust-llm-escalation-must-never-lower-a-trust-tier-pa.md",
+    "source": "docs/plan/tiered-trust.md",
+    "kind": "constraint",
+    "claim": "LLM escalation must never lower a trust tier \u2014 path rules set an immutable floor, and agent findings can only raise the tier to MANDATORY_HUMAN or above."
+  },
+  {
+    "file": "rationale/tiered-trust-trust-tier-and-risk-tier-are-orthogonal-dimensi.md",
+    "source": "docs/plan/tiered-trust.md",
+    "kind": "rationale",
+    "claim": "Trust tier and risk tier are orthogonal dimensions: risk tier controls how hard the AI looks, while trust tier controls who reviews and what role the AI plays (preliminary reviewer vs. review tool)."
+  },
+  {
+    "file": "constraint/api-re-review-never-discovers-new-findings-it-only-evaluates.md",
+    "source": "docs/api.md",
+    "kind": "constraint",
+    "claim": "Re-review never discovers new findings; it only evaluates whether non-dismissed findings from the original review are still valid."
+  },
+  {
+    "file": "rationale/api-the-re-review-endpoint-exists-as-a-deliberately-scoped-c.md",
+    "source": "docs/api.md",
+    "kind": "rationale",
+    "claim": "The re-review endpoint exists as a deliberately scoped, cheaper alternative to a full pipeline re-run when a PR has been updated after an initial review."
+  },
+  {
+    "file": "rationale/cli-re-review-deliberately-skips-the-full-agent-pipeline-to-.md",
+    "source": "docs/cli.md",
+    "kind": "rationale",
+    "claim": "`re-review` deliberately skips the full agent pipeline to be cheaper/faster and to prevent agents from hallucinating new findings."
+  },
+  {
+    "file": "constraint/cli-batch-dismiss-severity-is-cumulative-the-supplied-level-.md",
+    "source": "docs/cli.md",
+    "kind": "constraint",
+    "claim": "`batch-dismiss --severity` is cumulative: the supplied level is a ceiling, dismissing all findings at that severity AND below."
+  },
+  {
+    "file": "rationale/human-review-design-the-human-review-interface-groups-diffs-.md",
+    "source": "docs/human-review-design.md",
+    "kind": "rationale",
+    "claim": "The human review interface groups diffs into chapters by file concern rather than by AI agent because the human's job is to verify and judge automation output, not re-discover bugs."
+  },
+  {
+    "file": "constraint/human-review-design-each-chapter-must-target-200-400-loc-cha.md",
+    "source": "docs/human-review-design.md",
+    "kind": "constraint",
+    "claim": "Each chapter must target ~200\u2013400 LOC; chapters exceeding 500 LOC must be split and chapters below 100 LOC must be merged with related neighbours."
+  },
+  {
+    "file": "constraint/human-review-design-chapters-must-be-ordered-by-highest-find.md",
+    "source": "docs/human-review-design.md",
+    "kind": "constraint",
+    "claim": "Chapters must be ordered by highest finding severity descending, then production files before test/config \u2014 never alphabetically."
+  }
+]

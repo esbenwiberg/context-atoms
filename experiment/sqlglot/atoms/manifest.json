@@ -1,0 +1,212 @@
+[
+  {
+    "file": "constraint/claude-md-about-sqlglot-sqlglot-must-have-zero-external-runt.md",
+    "source": "CLAUDE.md#about-sqlglot",
+    "kind": "constraint",
+    "claim": "sqlglot must have zero external runtime dependencies."
+  },
+  {
+    "file": "rationale/claude-md-about-sqlglot-the-sqlglotc-directory-exists-as-an-.md",
+    "source": "CLAUDE.md#about-sqlglot",
+    "kind": "rationale",
+    "claim": "The sqlglotc/ directory exists as an optional mypyc-compiled C extension to provide performance improvements without breaking the pure-Python guarantee."
+  },
+  {
+    "file": "constraint/claude-md-development-commands-the-pure-python-test-target-e.md",
+    "source": "CLAUDE.md#development-commands",
+    "kind": "constraint",
+    "claim": "The pure-Python test target explicitly hides compiled `.so` files during execution so the Python implementation is validated independently of any C extension."
+  },
+  {
+    "file": "rationale/claude-md-development-commands-parallel-make-targets-test-te.md",
+    "source": "CLAUDE.md#development-commands",
+    "kind": "rationale",
+    "claim": "Parallel make targets (test/testc, unit/unitc, install-dev/install-devc) exist because the mypyc C extension is intentionally optional, treated as a pure performance optimisation rather than a required build artifact."
+  },
+  {
+    "file": "rationale/claude-md-architecture-overview-the-tokenizer-is-split-acros.md",
+    "source": "CLAUDE.md#architecture-overview",
+    "kind": "rationale",
+    "claim": "The tokenizer is split across two files so that the hot-path core logic in `tokenizer_core.py` can be compiled with mypyc when installing the `[c]` extra, while `tokens.py` remains a pure-Python fallback."
+  },
+  {
+    "file": "constraint/claude-md-architecture-overview-the-parser-must-never-hard-f.md",
+    "source": "CLAUDE.md#architecture-overview",
+    "kind": "constraint",
+    "claim": "The parser must never hard-fail on unparseable SQL; instead it falls back to an `exp.Command` node that preserves the original SQL text verbatim."
+  },
+  {
+    "file": "constraint/claude-md-architecture-overview-the-optimizer-s-sequential-r.md",
+    "source": "CLAUDE.md#architecture-overview",
+    "kind": "constraint",
+    "claim": "The optimizer's sequential rule pipeline has load-bearing order dependencies, so rules must not be reordered arbitrarily; `qualify` in particular must run before rules that depend on fully-resolved identifiers."
+  },
+  {
+    "file": "rationale/claude-md-key-concepts-sqlglot-uses-a-parse-semantic-ast-gen.md",
+    "source": "CLAUDE.md#key-concepts",
+    "kind": "rationale",
+    "claim": "SQLGlot uses a parse\u2192semantic-AST\u2192generate pipeline (rather than text-to-text transformation) because preserving semantics\u2014not syntax\u2014is what makes accurate cross-dialect transpilation possible."
+  },
+  {
+    "file": "constraint/claude-md-key-concepts-syntax-or-behaviour-that-is-common-ac.md",
+    "source": "CLAUDE.md#key-concepts",
+    "kind": "constraint",
+    "claim": "Syntax or behaviour that is common across multiple dialects must be implemented in the base 'sqlglot' dialect class, not duplicated across individual dialect subclasses."
+  },
+  {
+    "file": "rationale/claude-md-key-concepts-the-optimizer-s-annotate-types-pass-e.md",
+    "source": "CLAUDE.md#key-concepts",
+    "kind": "rationale",
+    "claim": "The optimizer's `annotate_types` pass exists because certain transpilations (e.g., whether `+` means numeric addition or string concatenation) cannot be resolved from syntax alone and require propagated type information."
+  },
+  {
+    "file": "constraint/claude-md-common-usage-patterns-unrecognized-sql-functions-a.md",
+    "source": "CLAUDE.md#common-usage-patterns",
+    "kind": "constraint",
+    "claim": "Unrecognized SQL functions are represented as exp.Anonymous nodes in the AST, making 'Anonymous' in repr(tree) the canonical way to detect unknown or unsupported function expressions."
+  },
+  {
+    "file": "constraint/claude-md-development-guidelines-ai-coding-agents-must-appen.md",
+    "source": "CLAUDE.md#development-guidelines",
+    "kind": "constraint",
+    "claim": "AI coding agents must append their model name (e.g. CLAUDE, CODEX) to the end of every PR title and commit message."
+  },
+  {
+    "file": "constraint/claude-md-development-guidelines-the-license-declaration-in-.md",
+    "source": "CLAUDE.md#development-guidelines",
+    "kind": "constraint",
+    "claim": "The license declaration in setup.py must not be modified, even if it looks incorrect or inconsistent."
+  },
+  {
+    "file": "constraint/claude-md-performance-considerations-code-must-avoid-typing-.md",
+    "source": "CLAUDE.md#performance-considerations",
+    "kind": "constraint",
+    "claim": "Code must avoid typing.Protocol and use Union types and duck typing instead."
+  },
+  {
+    "file": "rationale/claude-md-performance-considerations-the-parser-uses-recursi.md",
+    "source": "CLAUDE.md#performance-considerations",
+    "kind": "rationale",
+    "claim": "The parser uses recursive descent intentionally; Pratt parsing is explicitly rejected as an optimization path."
+  },
+  {
+    "file": "rationale/claude-md-performance-considerations-the-optional-c-extensio.md",
+    "source": "CLAUDE.md#performance-considerations",
+    "kind": "rationale",
+    "claim": "The optional C extension is compiled via mypyc from pure Python source rather than being a hand-written C extension, so pure Python remains the single source of truth."
+  },
+  {
+    "file": "constraint/claude-md-sqlglot-coding-rules-generator-methods-named-lower.md",
+    "source": "CLAUDE.md#sqlglot-coding-rules",
+    "kind": "constraint",
+    "claim": "Generator methods named `<lowercase_expr_name>_sql` are auto-discovered; TRANSFORMS entries must only be used for one-liners, renames, lambdas, or functions with multiple entry points."
+  },
+  {
+    "file": "constraint/claude-md-sqlglot-coding-rules-null-handling-must-occur-at-q.md",
+    "source": "CLAUDE.md#sqlglot-coding-rules",
+    "kind": "constraint",
+    "claim": "NULL handling must occur at query time via IS NULL in generated SQL, not at transpile time by inspecting exp.Null() instances in Python."
+  },
+  {
+    "file": "rationale/claude-md-sqlglot-coding-rules-f-strings-are-never-used-to-b.md",
+    "source": "CLAUDE.md#sqlglot-coding-rules",
+    "kind": "rationale",
+    "claim": "F-strings are never used to build SQL output fragments because they bypass quoting, escaping, and dialect-aware identifier handling."
+  },
+  {
+    "file": "constraint/contributing-md-ai-coding-agents-must-append-their-model-nam.md",
+    "source": "CONTRIBUTING.md",
+    "kind": "constraint",
+    "claim": "AI coding agents must append their model name (e.g., CLAUDE, CODEX) to the end of every pull request title."
+  },
+  {
+    "file": "constraint/contributing-md-each-pull-request-must-focus-on-a-single-wel.md",
+    "source": "CONTRIBUTING.md",
+    "kind": "constraint",
+    "claim": "Each pull request must focus on a single, well-defined change; bundling multiple unrelated fixes or features in one PR is explicitly prohibited."
+  },
+  {
+    "file": "constraint/contributing-md-pull-request-titles-must-follow-the-conventi.md",
+    "source": "CONTRIBUTING.md",
+    "kind": "constraint",
+    "claim": "Pull request titles must follow the Conventional Commits specification."
+  },
+  {
+    "file": "constraint/readme-md-sqlglot-must-have-zero-external-python-dependencie.md",
+    "source": "README.md",
+    "kind": "constraint",
+    "claim": "SQLGlot must have zero external Python dependencies."
+  },
+  {
+    "file": "constraint/readme-md-dialect-incompatibility-errors-must-be-configurabl.md",
+    "source": "README.md",
+    "kind": "constraint",
+    "claim": "Dialect incompatibility errors must be configurable to either warn or raise, not hard-fail unconditionally."
+  },
+  {
+    "file": "rationale/readme-md-install-the-optional-c-extension-build-is-compiled.md",
+    "source": "README.md#install",
+    "kind": "rationale",
+    "claim": "The optional C extension build is compiled with mypyc (from type-annotated Python) rather than Cython or pybind11."
+  },
+  {
+    "file": "constraint/readme-md-versioning-sqlglot-s-versioning-intentionally-devi.md",
+    "source": "README.md#versioning",
+    "kind": "constraint",
+    "claim": "SQLGlot's versioning intentionally deviates from standard semver: PATCH includes backwards-compatible feature additions (not just fixes), and MINOR signals backwards-incompatible changes."
+  },
+  {
+    "file": "rationale/readme-md-faq-the-default-no-dialect-sqlglot-dialect-is-inte.md",
+    "source": "README.md#faq",
+    "kind": "rationale",
+    "claim": "The default (no-dialect) SQLGlot dialect is intentionally designed as a superset of all supported dialects, not as standard ANSI SQL."
+  },
+  {
+    "file": "constraint/readme-md-faq-both-parsing-and-sql-generation-require-an-exp.md",
+    "source": "README.md#faq",
+    "kind": "constraint",
+    "claim": "Both parsing and SQL generation require an explicit dialect argument; omitting it on either side silently uses the SQLGlot superset dialect instead of the intended database dialect."
+  },
+  {
+    "file": "rationale/readme-md-examples-the-qualify-and-annotate-types-optimizer-.md",
+    "source": "README.md#examples",
+    "kind": "rationale",
+    "claim": "The `qualify` and `annotate_types` optimizer rules are deliberately excluded from the default transpilation pipeline because they add significant overhead and complexity, despite being required for accurate type-sensitive transformations."
+  },
+  {
+    "file": "rationale/readme-md-examples-the-python-sql-executor-is-intentionally-.md",
+    "source": "README.md#examples",
+    "kind": "rationale",
+    "claim": "The Python SQL executor is intentionally not designed for performance; its purpose is unit testing and running SQL natively over Python dicts, with its architecture intended as a foundation for integration with fast compute kernels such as Arrow or Pandas."
+  },
+  {
+    "file": "rationale/readme-md-benchmarks-the-optional-c-extension-sqlglot-c-exis.md",
+    "source": "README.md#benchmarks",
+    "kind": "rationale",
+    "claim": "The optional C extension (`sqlglot[c]`) exists to close the ~4x performance gap between pure-Python sqlglot and Rust-based parsers, achieving near-Rust parse speeds while keeping a Python-native codebase."
+  },
+  {
+    "file": "rationale/readme-md-optional-dependencies-dateutil-is-an-optional-depe.md",
+    "source": "README.md#optional-dependencies",
+    "kind": "rationale",
+    "claim": "dateutil is an optional dependency used exclusively to simplify literal timedelta/interval expressions in the optimizer."
+  },
+  {
+    "file": "constraint/readme-md-optional-dependencies-the-optimizer-must-degrade-g.md",
+    "source": "README.md#optional-dependencies",
+    "kind": "constraint",
+    "claim": "The optimizer must degrade gracefully and skip interval-expression simplification when dateutil is not installed, rather than raising an ImportError."
+  },
+  {
+    "file": "rationale/readme-md-supported-dialects-sqlglot-uses-a-three-tier-diale.md",
+    "source": "README.md#supported-dialects",
+    "kind": "rationale",
+    "claim": "SQLGlot uses a three-tier dialect model (Official / Community / Plugin) to separate core-team maintenance responsibility from community and third-party ownership without excluding those dialects from the ecosystem."
+  },
+  {
+    "file": "constraint/readme-md-supported-dialects-third-party-plugin-dialects-mus.md",
+    "source": "README.md#supported-dialects",
+    "kind": "constraint",
+    "claim": "Third-party plugin dialects must register themselves under the `sqlglot.dialects` entry-point group so that SQLGlot can discover and load them automatically without any changes to the core codebase."
+  }
+]

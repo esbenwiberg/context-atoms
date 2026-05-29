@@ -1,0 +1,21 @@
+{
+  "pr": 7659,
+  "title": "fix(parser): Avoid `__tmp#` CTEs getting replaced with outer CTEs for pipe syntax",
+  "body": "Fixes a bug where pipe syntax queries with leading CTEs were getting misinterpreted to have references to nonexistent `__tmp#` CTEs, because the `__tmp#` CTEs were getting replaced with the leading CTEs.\r\n\r\nExample query:\r\n```sql\r\nWITH x AS (SELECT 1 AS x1) FROM x |> SELECT x1, 2 AS x2\r\n```\r\n\r\nCurrent interpretation without this PR (invalid query):\r\n```sql\r\nWITH x AS (SELECT 1 AS x1) SELECT * FROM __tmp1\r\n```\r\n\r\nCorrected interpretation with this PR:\r\n```sql\r\nWITH x AS (SELECT 1 AS x1), __tmp1 AS (SELECT x1, 2 AS x2 FROM x) SELECT * FROM __tmp1\r\n```",
+  "stratum": "simple",
+  "base_sha": "8e34388be82de6ffa57edc0d86f8173393bfa1ca",
+  "merge_sha": "c19bb4b3d7282f2da5eea7f3dc76c1a270ff909d",
+  "test_files": [
+    "tests/dialects/test_pipe_syntax.py"
+  ],
+  "src_files": [
+    "sqlglot/parser.py"
+  ],
+  "loc": 20,
+  "red_check": {
+    "returncode": 1,
+    "n_failed": 1,
+    "n_error": 0,
+    "n_passed": 10
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "pr": 7649,
+  "title": "feat(tsql): support FOR JSON clause [CLAUDE]",
+  "body": "## Summary\r\n  Adds parsing and generation for T-SQL's `FOR JSON` query modifier, mirroring the existing `FOR XML` handling.\r\n\r\n  Grammar covered:\r\n\r\n  FOR JSON { AUTO | PATH } [, ROOT [ ('name') ]]\r\n                           [, INCLUDE_NULL_VALUES]\r\n                           [, WITHOUT_ARRAY_WRAPPER]\r\n\r\n  Reference: https://learn.microsoft.com/en-us/sql/relational-databases/json/format-query-results-as-json-with-for-json-sql-server\r\n\r\n  ## Behavior in other dialects\r\n  Other dialects emit `Unsupported query option.` and drop the `FOR JSON` clause \u2014 same behavior as `FOR XML` today. Locked in via `validate_all` against postgres/duckdb.\r\n\r\n  ## Test plan\r\n  - [x] Identity round-trip for every documented option combination (incl. arbitrary modifier ordering)\r\n  - [x] Canonical correlated-subquery JSON-shaping pattern\r\n  - [x] `FOR JSON` inside a derived table\r\n  - [x] Pretty-print round-trip\r\n  - [x] Cross-dialect drop (`validate_all` \u2192 tsql/postgres/duckdb)\r\n  - [x] Full test suite: 1108 tests / 18,028 subtests passing\r\n  - [x] `ruff check`, `ruff format`, `mypy` clean\r\n\r\n  ## Noted follow-up (not in this PR)\r\n  The dynamic args `for_` (XML) and `for_json_` (JSON) could be consolidated into a single `for_` slot with a kind discriminator (e.g. `exp.ForClause(this=\"XML\"|\"JSON\", expressions=[...])`). Left as-is for parity with the current XML implementation; happy to do this in a separate PR if preferred.",
+  "stratum": "novel",
+  "base_sha": "527aa46c5607ecdd9163de55e25d2502b261d8ac",
+  "merge_sha": "10af7778250f17d262626b7042f7d7e4f4f9c5e2",
+  "test_files": [
+    "tests/dialects/test_tsql.py"
+  ],
+  "src_files": [
+    "sqlglot/expressions/core.py",
+    "sqlglot/expressions/query.py",
+    "sqlglot/generator.py",
+    "sqlglot/parsers/tsql.py"
+  ],
+  "loc": 134,
+  "red_check": {
+    "returncode": 1,
+    "n_failed": 1,
+    "n_error": 0,
+    "n_passed": 53
+  }
+}

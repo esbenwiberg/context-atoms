@@ -1,0 +1,21 @@
+{
+  "pr": 58,
+  "title": "feat: in devops PR\u2019s users often for some reason approve themselves...",
+  "body": "## Why\n\nin devops PR\u2019s users often for some reason approve themselves.\nthat filters it out from our PR Dashboard.\n\nwe should support showing these PR\u2019s as ready for review!\nfrom devops PR:\n\u201cAt least 1 reviewer besides author must approve\u201d\n\ndeploy to azure when done\n\n## What\n\nADO (and GitHub) PRs where the author approves their own PR now correctly show as \"pending\" on the dashboard instead of \"approved\". This means self-approved DevOps PRs will be visible to real reviewers and appear in the review queue, matching the ADO branch policy \"At least 1 reviewer besides author must approve\". 16 new unit tests cover all self-approval scenarios for both platforms.\n\n## How\n\nUpdated _ado_approval_status to accept an author_id parameter and filter out the author's own vote before computing the result. Updated _normalize_ado_pr to pass the author's uniqueName. Applied the same fix to _gh_approval_status/author_login for consistency. Both functions remain backward-compatible (author_id defaults to empty string = no filtering).\n\n## \u26a0\ufe0f Concerns\n\n- \u26a0\ufe0f Undisclosed deviation: The original plan included 'Deploy to Azure' as step 6. The agent summary does not mention whether deployment was executed \u2014 it leaves no diff trace, so it is unverifiable from this changeset. If deployment was skipped, the task requirement 'deploy to azure when done' is unmet.\n\n## Validation\n\n| Phase | Status |\n|-------|--------|\n| Build | \u2705 pass |\n| Health check | \u2705 pass |\n| Page validation | \u2705 1/1 pages passed |\n| AI re",
+  "stratum": "medium",
+  "base_sha": "2d0de4ac7b3da348cace8b804a34d9893cdea155",
+  "merge_sha": "7970199b466d7b8d531b4c165303e7284b9fe163",
+  "test_files": [
+    "tests/test_pr_sync_approval.py"
+  ],
+  "src_files": [
+    "src/pr_guardian/core/pr_sync.py"
+  ],
+  "loc": 192,
+  "red_check": {
+    "returncode": 1,
+    "n_failed": 0,
+    "n_error": 0,
+    "n_passed": 0
+  }
+}

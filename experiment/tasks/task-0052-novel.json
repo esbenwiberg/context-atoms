@@ -1,0 +1,26 @@
+{
+  "pr": 52,
+  "title": "feat: ",
+  "body": "## Why\n\n\n\n## Validation\n\n| Phase | Status |\n|-------|--------|\n| Build | \u2705 pass |\n| Health check | \u2705 pass |\n| Page validation | \u2705 1/1 pages passed |\n**Overall: \u2705 pass** (attempt 2, 8s)\n\n## Stats\n\n`10 files` \u00b7 `+57` / `-19`\n\n## Screenshots\n\n### `/`\n![/](https://github.com/esbenwiberg/pr-guardian/blob/autopod/sour-cat/.autopod/screenshots/root.png?raw=true)\n\n## Preview\n\n[Open preview](http://127.0.0.1:23730)\n\n_Note: PR description generated from template \u2014 daemon-side LLM call fell back: `api_call_failed` (400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"timeout: Extra inputs are not permitted\"},\"request_id\":\"req_011CaoVZJYYC3JyqtYxWtY51\"})._\n\n---\n\ud83e\udd16 Created by [autopod](https://github.com/esbenwiberg/autopod) \u00b7 pod `sour-cat` \u00b7 profile `guardian-deploy`",
+  "stratum": "novel",
+  "base_sha": "5b8c9879dd67f2362499c8ad372a69d9c3fe4216",
+  "merge_sha": "05f504d7995abcc471f1587d476f7804c999d60a",
+  "test_files": [
+    "tests/test_capabilities_endpoint.py",
+    "tests/test_submit_verdict.py"
+  ],
+  "src_files": [
+    "src/pr_guardian/api/dashboard.py",
+    "src/pr_guardian/api/review.py",
+    "src/pr_guardian/core/orchestrator.py",
+    "src/pr_guardian/persistence/models.py",
+    "src/pr_guardian/persistence/storage.py"
+  ],
+  "loc": 76,
+  "red_check": {
+    "returncode": 1,
+    "n_failed": 0,
+    "n_error": 0,
+    "n_passed": 0
+  }
+}

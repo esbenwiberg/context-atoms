@@ -1,0 +1,21 @@
+{
+  "pr": 7597,
+  "title": "fix(parser): FROM with JOIN subqueries",
+  "body": "Fixes #7596",
+  "stratum": "simple",
+  "base_sha": "17432c61175194ee0f56f0703393e8c5fdc9e81f",
+  "merge_sha": "e550d008cc6ffa72b046d6406911b256c4a75f8b",
+  "test_files": [
+    "tests/dialects/test_duckdb.py"
+  ],
+  "src_files": [
+    "sqlglot/parser.py"
+  ],
+  "loc": 11,
+  "red_check": {
+    "returncode": 1,
+    "n_failed": 1,
+    "n_error": 0,
+    "n_passed": 43
+  }
+}

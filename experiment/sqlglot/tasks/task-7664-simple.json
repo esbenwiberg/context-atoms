@@ -1,0 +1,22 @@
+{
+  "pr": 7664,
+  "title": "Fix SQLite AUTOINCREMENT constraint ordering",
+  "body": "## Summary\n\nFix SQLite generation for MySQL auto-incrementing primary keys so `AUTOINCREMENT` is preserved regardless of source constraint order and emitted in a SQLite-valid position.\n\nBefore this change, semantically equivalent MySQL definitions produced different SQLite SQL:\n\n```sql\n-- input\nCREATE TABLE z (id INT AUTO_INCREMENT PRIMARY KEY)\n-- previous SQLite output\nCREATE TABLE z (id INTEGER PRIMARY KEY)\n\n-- input\nCREATE TABLE z (id INT PRIMARY KEY AUTO_INCREMENT)\n-- previous SQLite output\nCREATE TABLE z (id INTEGER PRIMARY KEY AUTOINCREMENT)\n```\n\nThis also fixes a table-level primary key case that previously generated SQLite syntax rejected by SQLite itself:\n\n```sql\n-- previous SQLite output\nCREATE TABLE x (id INTEGER NOT NULL AUTOINCREMENT PRIMARY KEY)\n-- fixed SQLite output\nCREATE TABLE x (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT)\n```\n\nSQLite accepts `AUTOINCREMENT` after `INTEGER PRIMARY KEY`; placing it before `PRIMARY KEY` is a syntax error.\n\n## Changes\n\n- Normalize SQLite column constraints so `AutoIncrementColumnConstraint` follows the column `PrimaryKeyColumnConstraint` when both are present.\n- Preserve `AUTOINCREMENT` for `AUTO_INCREMENT PRIMARY KEY` as well as `PRIMARY KEY AUTO_INCREMENT`.\n- Update MySQL and SQLite dialect tests to cover both source orders and the valid table-level primary key output.\n\n## Tests\n\n```bash\npython3 -m pytest tests/dialects/test_sqlite.py -q\npython3 -m pytest tests/dialects/test_mysql.py -q\n```\n\nI also sanity-checked the fixed",
+  "stratum": "simple",
+  "base_sha": "3685465fc2b02b2459f744b466670af62b5c859a",
+  "merge_sha": "dbc316cd126bed5311552e5dce7703ec693f4771",
+  "test_files": [
+    "tests/dialects/test_mysql.py",
+    "tests/dialects/test_sqlite.py"
+  ],
+  "src_files": [
+    "sqlglot/generators/sqlite.py"
+  ],
+  "loc": 43,
+  "red_check": {
+    "returncode": 1,
+    "n_failed": 2,
+    "n_error": 0,
+    "n_passed": 59
+  }
+}

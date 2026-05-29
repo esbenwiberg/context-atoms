@@ -1,0 +1,24 @@
+{
+  "pr": 7638,
+  "title": "feat(mysql): Support `CHANGE COLUMN`.",
+  "body": "In MySQL, `CHANGE COLUMN` will redefine a column, optionally renaming it:\r\n\r\n```\r\nCHANGE [COLUMN] old_col_name new_col_name column_definition\r\n    [FIRST | AFTER col_name]\r\n```\r\n\r\nWhen factoring this in, I evaluated two options:\r\n\r\n* Create a separate `ChangeColumn` type similar to the `ModifyColumn` type. Given that the `MODIFY` and `CHANGE` syntax are nearly identical except for the ability to rename the column, this seemed like the wrong approach.\r\n\r\n* Add a `rename_from` attribute to the `ModifyColumn` implementation, accepting the \"original\" column name.\r\n\r\nEven though `ChangeColumn` seemed to be a more orthogonal change with cleaner code, I chose the latter because it seemed more semantically correct: apart from a `new_col_name`, they share the same syntax and behaviour.",
+  "stratum": "novel",
+  "base_sha": "d7b0f15475acbbbd1b39a510575110e348e6e7b5",
+  "merge_sha": "cbd3576a4b93e37148da4b93bcabe84fdd9f31c0",
+  "test_files": [
+    "tests/dialects/test_mysql.py"
+  ],
+  "src_files": [
+    "sqlglot/expressions/ddl.py",
+    "sqlglot/generator.py",
+    "sqlglot/generators/mysql.py",
+    "sqlglot/parsers/mysql.py"
+  ],
+  "loc": 39,
+  "red_check": {
+    "returncode": 1,
+    "n_failed": 1,
+    "n_error": 0,
+    "n_passed": 48
+  }
+}

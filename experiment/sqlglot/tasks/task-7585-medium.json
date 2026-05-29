@@ -1,0 +1,22 @@
+{
+  "pr": 7585,
+  "title": "fix(redshift): support APPROXIMATE PERCENTILE_DISC round-trip",
+  "body": "`APPROXIMATE PERCENTILE_DISC(p) WITHIN GROUP (ORDER BY x)` is valid Redshift syntax that was causing a `ParseError` on round-trip. `_parse_approximate_count` only handled `APPROXIMATE COUNT(DISTINCT ...)` \u2014 when it saw a `PercentileDisc` it retreated, leaving `APPROXIMATE` stranded in the projection list.\r\n\r\nTo fix, another branch was added to `_parse_approximate_count` and generator was updated to output `exp.ApproxQuantile` correctly.",
+  "stratum": "medium",
+  "base_sha": "b3fa15979866947adbb600ae9b1d24e048997dad",
+  "merge_sha": "9f169ab17a8ada0a53e2d88c035196db673e37c4",
+  "test_files": [
+    "tests/dialects/test_redshift.py"
+  ],
+  "src_files": [
+    "sqlglot/generators/redshift.py",
+    "sqlglot/parsers/redshift.py"
+  ],
+  "loc": 21,
+  "red_check": {
+    "returncode": 1,
+    "n_failed": 1,
+    "n_error": 0,
+    "n_passed": 16
+  }
+}

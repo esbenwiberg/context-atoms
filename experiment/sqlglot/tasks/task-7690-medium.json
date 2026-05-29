@@ -1,0 +1,23 @@
+{
+  "pr": 7690,
+  "title": "Feat(duckdb): add support for overloaded `MACRO` DDL syntax",
+  "body": "closes #7688",
+  "stratum": "medium",
+  "base_sha": "22fd000c6993dc46786fe3c4ffa7a41f14a3a863",
+  "merge_sha": "96a90befb8493a70c6bd98e7f252480b23803eb1",
+  "test_files": [
+    "tests/dialects/test_duckdb.py"
+  ],
+  "src_files": [
+    "sqlglot/expressions/ddl.py",
+    "sqlglot/generator.py",
+    "sqlglot/parser.py"
+  ],
+  "loc": 124,
+  "red_check": {
+    "returncode": 1,
+    "n_failed": 1,
+    "n_error": 0,
+    "n_passed": 43
+  }
+}

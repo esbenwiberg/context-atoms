@@ -1,0 +1,21 @@
+{
+  "pr": 7621,
+  "title": "fix(parser): issue with no parenthesis functions",
+  "body": "This is a small fix for a parser bug where Tokens in `NO_PAREN_FUNCTIONS` / `NO_PAREN_FUNCTION_PARSERS` (e.g. `CURRENT_DATE`, CURRENT_USER, `SYSDATE`) were incorrectly resolved as function calls when appearing after a dot in a column reference.  Example of the issue:\r\n\r\n```\r\nSELECT myytable.current_user FROM mytable\r\n\u2192\r\nSELECT myytable.CURRENT_USER() FROM mytable\r\n```\r\n\r\nAdded tests, also updated fixture test files to reflect corrected identifier output for dotted column references.\r\n",
+  "stratum": "simple",
+  "base_sha": "a1fa1546c926b2858cfc5adcfbd186731de40eba",
+  "merge_sha": "e7e1fb0d3d16054c1076e9f0570b336643b371d8",
+  "test_files": [
+    "tests/test_parser.py"
+  ],
+  "src_files": [
+    "sqlglot/parser.py"
+  ],
+  "loc": 23,
+  "red_check": {
+    "returncode": 1,
+    "n_failed": 1,
+    "n_error": 0,
+    "n_passed": 64
+  }
+}

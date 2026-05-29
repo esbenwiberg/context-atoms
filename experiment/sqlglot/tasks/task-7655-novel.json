@@ -1,0 +1,25 @@
+{
+  "pr": 7655,
+  "title": "feat(postgres): add support for PostGIS 3D distance operator <<->>",
+  "body": "### Summary\r\nThis PR adds native tokenization, parsing, and generation support for the PostGIS 3D distance operator (`<<->>`). \r\n\r\n### Details\r\n- **Tokens**: Added `DISTANCE3D` to `TokenType` and mapped the symbol `<<->>` to it.\r\n- **Parser**: Added `TokenType.DISTANCE3D` to the `FACTOR` lookup table to parse into `exp.Distance3d`.\r\n- **Expressions**: Added `Distance3d` as a core `Binary` expression.\r\n- **Generator**: Added `distance3d_sql` to seamlessly generate `<<->>`.\r\n- **Tests**: Included a regression identity test under `tests/dialects/test_postgres.py`.\r\n\r\nAddresses syntax compatibility issues for engine workloads using spatial extensions (like SQLMesh models interacting with PostGIS).",
+  "stratum": "novel",
+  "base_sha": "c19bb4b3d7282f2da5eea7f3dc76c1a270ff909d",
+  "merge_sha": "cc448ac4809f52b7d458aef220eee8ff7b838d7f",
+  "test_files": [
+    "tests/dialects/test_postgres.py"
+  ],
+  "src_files": [
+    "sqlglot/expressions/core.py",
+    "sqlglot/generator.py",
+    "sqlglot/parser.py",
+    "sqlglot/tokenizer_core.py",
+    "sqlglot/tokens.py"
+  ],
+  "loc": 13,
+  "red_check": {
+    "returncode": 1,
+    "n_failed": 1,
+    "n_error": 0,
+    "n_passed": 25
+  }
+}

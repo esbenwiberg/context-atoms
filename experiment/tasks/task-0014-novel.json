@@ -1,0 +1,24 @@
+{
+  "pr": 14,
+  "title": "Add verdict_explanation field to capture LLM reasoning",
+  "body": "## Summary\nThis PR adds a `verdict_explanation` field to agent results to capture brief LLM-generated explanations of why agents chose their verdicts. This helps human reviewers understand what to focus on when reviewing flagged PRs.\n\n## Key Changes\n\n- **Database Migration**: Added `verdict_explanation` column (nullable Text) to `agent_results` table via Alembic migration with idempotent column existence check\n- **Data Model**: Added `verdict_explanation: str | None` field to `AgentResult` dataclass\n- **Agent Prompt**: Updated base agent prompt to require `verdict_explanation` for \"warn\" and \"flag_human\" verdicts (1-2 sentence summaries of reasoning and review focus)\n- **Agent Parsing**: Modified `_parse_response()` to extract and store `verdict_explanation` from LLM responses\n- **Storage Layer**: Updated `save_review_result()` and `_review_to_dict()` to persist and retrieve `verdict_explanation`\n- **Dashboard UI**: \n  - Added \"Why This PR Needs Human Review\" section to display override reasons\n  - Added \"Review focus\" subsection under agent verdict cards (shown for warn/flag_human verdicts)\n  - Properly escaped and formatted explanation text in HTML\n- **Tests**: Added tests to verify explanation preservation and null default behavior\n\n## Implementation Details\n\n- The `verdict_explanation` field is optional (nullable) to maintain backward compatibility\n- LLM is instructed to set explanation to null for \"pass\" verdicts and provide 1-2 sentence summaries for \"warn\"/\"flag_human\"",
+  "stratum": "novel",
+  "base_sha": "c1362e3b54712660eb6652636965192823387903",
+  "merge_sha": "b552049cd5a21016d109c7297c871fb3aeaa1485",
+  "test_files": [
+    "tests/test_decision.py"
+  ],
+  "src_files": [
+    "src/pr_guardian/agents/base.py",
+    "src/pr_guardian/models/findings.py",
+    "src/pr_guardian/persistence/models.py",
+    "src/pr_guardian/persistence/storage.py"
+  ],
+  "loc": 97,
+  "red_check": {
+    "returncode": 1,
+    "n_failed": 0,
+    "n_error": 0,
+    "n_passed": 0
+  }
+}

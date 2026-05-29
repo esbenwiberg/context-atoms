@@ -1,0 +1,22 @@
+{
+  "pr": 7641,
+  "title": "fix(mysql)!: qualify column reference in NULLS LAST CASE simulation",
+  "body": "## Problem\n\nWhen transpiling `ORDER BY <col>` from a `NULL_ORDERING = \"nulls_are_last\"` source dialect (e.g. DuckDB) into MySQL, the generator emits a `CASE WHEN <col> IS NULL THEN 1 ELSE 0 END, <col>` shim to simulate `NULLS LAST` (MySQL has no native `NULLS FIRST/LAST` syntax). The shim inlines the raw `ORDER BY` expression verbatim \u2014 typically a bare column name.\n\nThat's fine for a single-table query, but in a multi-table `FROM` where the same unqualified column name exists in more than one table, MySQL raises:\n\n```\nERROR 1052 (23000): Column '<name>' in order clause is ambiguous\n```\n\n\u2026even when there is an unambiguous `SELECT`-list projection. MySQL's `ORDER BY` does apply alias-first column resolution against the `SELECT` list \u2014 but inside the `CASE` expression in `ORDER BY`, that alias-first rule does not apply. The bare reference falls through to base-table resolution and collides.\n\n## Reproducer\n\n```python\nfrom sqlglot import parse_one\n\nsrc = (\n    \"SELECT e.employee_id FROM employees e \"\n    \"LEFT JOIN employee_positions ep ON e.employee_id = ep.employee_id \"\n    \"ORDER BY employee_id\"\n)\nprint(parse_one(src, read=\"duckdb\").sql(dialect=\"mysql\"))\n```\n\nOutput today (rejected by MySQL 8.0):\n\n```sql\nSELECT e.employee_id FROM employees AS e LEFT JOIN employee_positions AS ep\n  ON e.employee_id = ep.employee_id\nORDER BY CASE WHEN employee_id IS NULL THEN 1 ELSE 0 END, employee_id\n```\n\nAfter this PR:\n\n```sql\nSELECT e.employee_id FROM employees AS e LEFT JOIN employee_positio",
+  "stratum": "medium",
+  "base_sha": "f00bb4a245606935253c2ba6b040af27e0f45106",
+  "merge_sha": "0e9e0a483b3207a573ba07023d4071d1b9ddc181",
+  "test_files": [
+    "tests/dialects/test_mysql.py",
+    "tests/dialects/test_tsql.py"
+  ],
+  "src_files": [
+    "sqlglot/generator.py"
+  ],
+  "loc": 121,
+  "red_check": {
+    "returncode": 1,
+    "n_failed": 2,
+    "n_error": 0,
+    "n_passed": 103
+  }
+}

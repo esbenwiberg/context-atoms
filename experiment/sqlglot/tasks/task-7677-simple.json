@@ -1,0 +1,21 @@
+{
+  "pr": 7677,
+  "title": "Fix: improve transpilation of `e'...'` strings",
+  "body": "Closes #7676.\n\nPostgres `E'...'` escape strings parse to `ByteString`. When transpiled to a dialect with no byte-string syntax (e.g. SQLite), `bytestring_sql` returned the bare unescaped value with no surrounding quotes, producing invalid SQL.\n\n```python\nsqlglot.transpile(r\"SELECT E'a\\nb'\", read=\"postgres\", write=\"sqlite\")[0]\n# before: 'SELECT a\\nb'   (no quotes, invalid)\n# after:  \"SELECT 'a\\nb'\"\n```\n\nThe fallback now emits a regular string literal via the target dialect's quoting, matching how `national_sql` and `rawstring_sql` handle unsupported prefixes. Postgres roundtrip and real byte types are unaffected.",
+  "stratum": "simple",
+  "base_sha": "c30507e5dbe6f1bc5dfa95ba19d47dd62c0f2082",
+  "merge_sha": "5683e3df9926f25e8d60e65c93851c8035db0cb0",
+  "test_files": [
+    "tests/dialects/test_postgres.py"
+  ],
+  "src_files": [
+    "sqlglot/generator.py"
+  ],
+  "loc": 19,
+  "red_check": {
+    "returncode": 1,
+    "n_failed": 1,
+    "n_error": 0,
+    "n_passed": 25
+  }
+}

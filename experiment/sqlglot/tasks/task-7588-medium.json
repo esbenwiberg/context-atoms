@@ -1,0 +1,23 @@
+{
+  "pr": 7588,
+  "title": "fix(databricks)!: disambiguate 2-arg date_add from 3-arg dateadd [CLAUDE]",
+  "body": "Follow-up to #3609.\n\nThat PR added Databricks support for the 3-arg `DATE_ADD(unit, value, expr)`\nshape and noted: \"the old / 2-arg version is still supported alongside the\nnew one and should be preserved to ensure the DATE vs TIMESTAMP semantics.\"\n\nThe transpile output preserves the unit, but at the AST level both shapes\ncollapsed to `exp.DateAdd(unit=DAY|<unit>, this=expr, expression=value)` with\nbit-identical args. A type annotator on `exp.DateAdd` therefore cannot honor\nthe differing return-type contracts:\n\n| Form                                | Documented return           |\n| ----------------------------------- | --------------------------- |\n| `date_add(startDate, numDays)`      | `DATE`                      |\n| `dateadd(unit, value, expr)`        | preserves `expr`'s type     |\n\n## Empirical Databricks behavior\n\nBoth function names accept both arities, and arity alone selects the\nsemantic. Verified against a live Databricks SQL warehouse:\n\n| SQL                                                           | Result                            | Type        |\n| ------------------------------------------------------------- | --------------------------------- | ----------- |\n| `date_add(DATE'2024-01-01', 5)`                               | `2024-01-06`                      | `date`      |\n| `date_add(MONTH, 1, TIMESTAMP'2024-01-01 00:00')`             | `2024-02-01T00:00:00.000+00:00`   | `timestamp` |\n| `dateadd(MONTH, 1, TIMESTAMP'2024-01-01 00:00')`              | `2024-02",
+  "stratum": "medium",
+  "base_sha": "d25fbdd04c036f63ab07ef6736c29c32276d6cdd",
+  "merge_sha": "a16f7d0aa2b5b6a505b65788d0a84bcfef4d3c8c",
+  "test_files": [
+    "tests/dialects/test_databricks.py"
+  ],
+  "src_files": [
+    "sqlglot/generators/tsql.py",
+    "sqlglot/parsers/databricks.py",
+    "sqlglot/typing/spark.py"
+  ],
+  "loc": 34,
+  "red_check": {
+    "returncode": 1,
+    "n_failed": 1,
+    "n_error": 0,
+    "n_passed": 18
+  }
+}

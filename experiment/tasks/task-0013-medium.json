@@ -1,0 +1,23 @@
+{
+  "pr": 13,
+  "title": "Reduce false-positive HIGH-risk human review flags",
+  "body": "## Summary\n- **Decision engine**: HIGH risk tier now allows auto-approve when all agents pass clean (score <= threshold), instead of unconditionally forcing human review. Override checks (trust tier, blocked branches, dependencies) still apply as safety nets.\n- **Triage \u2014 adds_api_endpoints**: Switched from substring matching to path-segment matching. Files like `ReleaseHandler.tsx` no longer falsely trigger the \"new API endpoints\" HIGH signal.\n- **Triage \u2014 crosses_architecture_boundary**: Raised threshold from >1 to >2 distinct modules. Typical multi-folder UI changes no longer flag as architecture boundary crossings.\n\n## Test plan\n- [x] Existing decision engine tests updated and passing\n- [x] New tests for HIGH tier clean auto-approve, HIGH tier with findings escalation\n- [x] New tests for path-segment API endpoint detection (false positive + true positive)\n- [x] New tests for architecture boundary threshold (2 modules = ok, 3 modules = flagged)\n- [ ] Verify the specific TeamPlanner sort-fix PR would no longer be flagged as human review\n\n\ud83e\udd16 Generated with [Claude Code](https://claude.com/claude-code)",
+  "stratum": "medium",
+  "base_sha": "f4411bf12e93b3a13676470d5d358b727d8c3b77",
+  "merge_sha": "d7cd3ff24c79ba462d9c7f668113173ea7340176",
+  "test_files": [
+    "tests/test_change_profile.py",
+    "tests/test_decision.py"
+  ],
+  "src_files": [
+    "src/pr_guardian/decision/engine.py",
+    "src/pr_guardian/discovery/change_profile.py"
+  ],
+  "loc": 76,
+  "red_check": {
+    "returncode": 1,
+    "n_failed": 0,
+    "n_error": 0,
+    "n_passed": 0
+  }
+}

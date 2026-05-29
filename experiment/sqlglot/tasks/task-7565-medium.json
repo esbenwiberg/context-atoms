@@ -1,0 +1,22 @@
+{
+  "pr": 7565,
+  "title": "fix(oracle): Support LISTAGG on overflow",
+  "body": "Oracle supports the `LISTAGG(last_name, '; ' ON OVERFLOW TRUNCATE '...')` syntax\r\nsqlglot already supports it (for Snowflake) - This PR adds support for Oracle \r\n\r\nofficial docs: https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/LISTAGG.html",
+  "stratum": "medium",
+  "base_sha": "2c1a90ccf82cb8d3c43703bc9698e3872a4166e9",
+  "merge_sha": "3bc8f3846871d630338fb75761117151cbd9162b",
+  "test_files": [
+    "tests/dialects/test_oracle.py"
+  ],
+  "src_files": [
+    "sqlglot/generators/oracle.py",
+    "sqlglot/parsers/oracle.py"
+  ],
+  "loc": 13,
+  "red_check": {
+    "returncode": 1,
+    "n_failed": 1,
+    "n_error": 0,
+    "n_passed": 24
+  }
+}

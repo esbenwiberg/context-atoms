@@ -1,0 +1,22 @@
+{
+  "pr": 7552,
+  "title": "Refactor!: map duckdb `LIST` to `ArrayAgg`",
+  "body": "This is Copilot's response when I asked whether `LIST` and `ARRAY_AGG` are synonymous in DuckDB:\r\n\r\n\u00abIn DuckDB, **`list(expr)` and `array_agg(expr)` are essentially the same kind of aggregate**: both collect the grouped input values into a single **LIST (array) value**.\r\n\r\nPractical differences are mostly about **name/compatibility and a few option/details**, not the core semantics:\r\n\r\n- **Purpose**\r\n  - `array_agg` is the more *standard SQL / Postgres-style* name.\r\n  - `list` is a shorter DuckDB-friendly alias/name for the same idea.\r\n\r\n- **Return type**\r\n  - Both return DuckDB\u2019s **LIST** type (conceptually an array).\r\n\r\n- **Options**\r\n  - Both typically support the same aggregate features you\u2019d expect: `DISTINCT`, `FILTER`, and often `ORDER BY` within the aggregate (depending on DuckDB version).\r\n\r\nSo: **yes, for normal usage they\u2019re interchangeable**\u2014use `array_agg` if you want portability/readability for SQL folks, use `list` if you prefer the concise DuckDB idiom.\r\n\r\nIf you tell me your DuckDB version (or paste `SELECT version();`), I can be precise about any version-specific differences (e.g., ordering guarantees/availability of `ORDER BY` within the aggregate).\u00bb\r\n\r\nOriginal PR: https://github.com/tobymao/sqlglot/pull/7551",
+  "stratum": "medium",
+  "base_sha": "8f572f8656c9a5a5e45ac25607af6204bca58773",
+  "merge_sha": "e883b0b39ebdeeab408743786f66d62dd92b3267",
+  "test_files": [
+    "tests/dialects/test_duckdb.py"
+  ],
+  "src_files": [
+    "sqlglot/generators/snowflake.py",
+    "sqlglot/parsers/duckdb.py"
+  ],
+  "loc": 4,
+  "red_check": {
+    "returncode": 1,
+    "n_failed": 1,
+    "n_error": 0,
+    "n_passed": 43
+  }
+}

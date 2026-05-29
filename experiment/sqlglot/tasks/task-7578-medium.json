@@ -1,0 +1,23 @@
+{
+  "pr": 7578,
+  "title": "fix(oracle): Support FORMAT JSON in JSON_TABLE",
+  "body": "Don't fail when parsing `JSON_TABLE` with `FORMAT JSON`\r\n\r\nfrom docs: _You must specify FORMAT JSON if expr is a column of data type BLOB._\r\n\r\nDocs: https://docs.oracle.com/en/database/oracle/oracle-database/26/sqlrf/JSON_TABLE.html",
+  "stratum": "medium",
+  "base_sha": "1a10806505db181737065898458fdc669e4a7ce5",
+  "merge_sha": "717a50d815d0336adf597476a866efd5ca8db8a3",
+  "test_files": [
+    "tests/dialects/test_oracle.py"
+  ],
+  "src_files": [
+    "sqlglot/expressions/query.py",
+    "sqlglot/generator.py",
+    "sqlglot/parser.py"
+  ],
+  "loc": 15,
+  "red_check": {
+    "returncode": 1,
+    "n_failed": 1,
+    "n_error": 0,
+    "n_passed": 24
+  }
+}

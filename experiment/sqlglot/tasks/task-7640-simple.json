@@ -1,0 +1,21 @@
+{
+  "pr": 7640,
+  "title": "fix(parser): allow WINDOW clause without FROM",
+  "body": "Closes #7438.\r\n\r\n## What\r\n\r\n`SELECT 1 WINDOW a AS (PARTITION BY x)` raised `ParseError: Invalid expression / Unexpected token`. With a FROM clause the parser short-circuits earlier and the query parses fine, but SQLite and DuckDB both happily execute the FROM-less form against real databases, so users hit this writing portable SQL.\r\n\r\nRoot cause: `WINDOW` is in `Parser.ID_VAR_TOKENS` and `Parser.ALIAS_TOKENS`, so the projection-alias parser greedily consumes `WINDOW` as an implicit alias for `1`. Then it hits the next identifier (`a`) without a separator and fails.\r\n\r\n## Fix\r\n\r\nAdd a `_can_parse_named_window` lookahead, mirroring the existing `_can_parse_limit_or_offset` pattern. Called from `_parse_alias` before consuming the alias. It checks the exact 4-token shape `WINDOW <ident> AS (` \u2014 strict enough to preserve `SELECT col window FROM t` \u2192 `SELECT col AS window FROM t` (implicit alias) and `SELECT WINDOW()` (function call), while catching the legitimate named-window clause.\r\n\r\n## Tests\r\n\r\n`tests.test_parser.TestParser.test_window_clause_without_from` covers:\r\n\r\n- Default + sqlite/postgres/mysql/duckdb/bigquery \u2014 all parse `SELECT 1 WINDOW a AS (PARTITION BY x)`\r\n- Multi-window form `WINDOW a AS (...), b AS (...)`\r\n- `SELECT 1 AS WINDOW` \u2014 explicit alias still works\r\n- `SELECT col window FROM t` \u2014 implicit alias still resolves to `col AS window`",
+  "stratum": "simple",
+  "base_sha": "7e7cf8b06397ed440921d079a39112e073bcfa80",
+  "merge_sha": "63296846f6a7a683af21683acb24aad7a63bb3f5",
+  "test_files": [
+    "tests/test_parser.py"
+  ],
+  "src_files": [
+    "sqlglot/parser.py"
+  ],
+  "loc": 40,
+  "red_check": {
+    "returncode": 1,
+    "n_failed": 1,
+    "n_error": 0,
+    "n_passed": 65
+  }
+}
