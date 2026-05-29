@@ -68,20 +68,34 @@ class PytestResult:
     stdout: str
 
 
-def prepare_worktree(wt: Worktree, files: dict[str, str]) -> None:
-    """Synthesize files into a fresh worktree (e.g. a version stub)."""
+def prepare_worktree(wt: Worktree, files: dict[str, str] | None = None,
+                     symlinks: dict[str, Path] | None = None) -> None:
+    """Synthesize files/symlinks into a fresh worktree.
+
+    files: relpath -> content (e.g. a version stub).
+    symlinks: relpath -> absolute target (e.g. node_modules from the main checkout,
+    to skip a per-run install).
+    """
     for rel, content in (files or {}).items():
         dest = wt.path / rel
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_text(content, encoding="utf-8")
+    for rel, target in (symlinks or {}).items():
+        link = wt.path / rel
+        if not link.exists():
+            link.parent.mkdir(parents=True, exist_ok=True)
+            link.symlink_to(target)
 
 
-def run_pytest(wt: Worktree, venv_python: Path, test_targets: list[str],
-               timeout: int = 300, pythonpath: Path | None = None) -> PytestResult:
+def run_tests(wt: Worktree, profile, test_targets: list[str],
+              timeout: int = 300) -> PytestResult:
+    """Run the profile's test command on the given targets. Pass == exit code 0."""
     env = dict(os.environ)
-    env["PYTHONPATH"] = str(pythonpath if pythonpath is not None else wt.path / "src")
     env["PYTHONDONTWRITEBYTECODE"] = "1"
-    args = [str(venv_python), "-m", "pytest", "-q", "-p", "no:cacheprovider", *test_targets]
+    pp = profile.test_env_pythonpath(wt.path)
+    if pp is not None:
+        env["PYTHONPATH"] = str(pp)
+    args = profile.test_argv(wt.path, test_targets)
     try:
         r = subprocess.run(args, cwd=str(wt.path), env=env, capture_output=True,
                            text=True, timeout=timeout)

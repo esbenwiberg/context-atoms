@@ -1,0 +1,23 @@
+{
+  "pr": 35,
+  "title": "Phase 2 \u2014 Per-finding triage classifier (noise / fyi / decision)",
+  "body": "## Summary\n\nPhase **2** of the wizard work: classify every finding into one of three classes \u2014 **noise / fyi / decision** \u2014 so the wizard can focus the human on what they actually need to decide and roll the rest into an audit count.\n\nStacked on top of PR #34 (the wizard slice). Once #34 lands, this rebases to trunk automatically.\n\n## Rules (defaults)\n\n| When                                         | Class    |\n|----------------------------------------------|----------|\n| dismissed                                    | noise    |\n| severity \u2208 {high, critical}                  | decision |\n| severity = medium AND certainty = detected   | decision |\n| severity = medium                            | fyi      |\n| severity = low AND certainty = detected      | fyi      |\n| severity = low                               | noise    |\n| unknown / missing severity                   | decision (fail safe) |\n\nThese are intentionally hardcoded for Phase 2 \u2014 Phase 2.5 can lift them into `GuardianConfig` once usage tells us where the boundaries should sit.\n\n## What changed\n\n**`src/pr_guardian/decision/finding_triage.py`** *(new)*\n\n- `classify_finding(finding) -> \"noise\" | \"fyi\" | \"decision\"` \u2014 pure function, takes a JSON-shaped finding dict.\n- `tag_findings_with_triage(agent_results)` \u2014 in-place mutation that adds a `triage` field to every finding, returns a counts roll-up.\n\n**`src/pr_guardian/api/dashboard.py`**\n\nCalls `tag_findings_with_triage` in the review-detail endpoint right after dismi",
+  "stratum": "medium",
+  "base_sha": "ec063a16190874fe8d356a7d57b19d8b5b5a7d6a",
+  "merge_sha": "6d55183dfe544a4b5cb86f6aab561066701de4e0",
+  "test_files": [
+    "tests/test_dashboard_triage_enrichment.py",
+    "tests/test_finding_triage.py"
+  ],
+  "src_files": [
+    "src/pr_guardian/api/dashboard.py",
+    "src/pr_guardian/decision/finding_triage.py"
+  ],
+  "loc": 281,
+  "red_check": {
+    "returncode": 2,
+    "n_failed": 0,
+    "n_error": 1,
+    "n_passed": 0
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "pr": 49,
+  "title": "feat: ",
+  "body": "## Why\n\n\n\n## What\n\nFixed a test regression introduced when the manual_repo_review endpoint was updated to route GitHub requests through create_github_adapter (async, DB-backed PAT resolution) instead of the old synchronous create_adapter. The three TestManualRepoReviewQueueing tests still patched create_adapter, which meant the real create_github_adapter ran during tests, causing SQLAlchemy's async session cleanup to emit an extra asyncio.create_task(session.close()) call that broke assert_called_once(). Updated all three tests to patch create_github_adapter with AsyncMock. All 348 tests now pass. The updated image was built via ACR Tasks and deployed to the prguardian-contextand-app container app (deploy script exited 0).\n\n## How\n\nPatched the test class to use patch(\"pr_guardian.api.review.create_github_adapter\", new_callable=AsyncMock, return_value=mock_adapter) \u2014 this bypasses the DB session entirely so asyncio.create_task is called exactly once (for _run_repo_review_background). Removed the now-unused os.environ GITHUB_TOKEN patch from the two assertion tests since the token is no longer resolved in these paths.\n\n## Validation\n\n| Phase | Status |\n|-------|--------|\n| Build | \u2705 pass |\n| Health check | \u2705 pass |\n| Page validation | \u2705 1/1 pages passed |\n**Overall: \u2705 pass** (attempt 1, 7s)\n\n## Stats\n\n`6 files` \u00b7 `+267` / `-38`\n\n## Screenshots\n\n### `/`\n![/](https://github.com/esbenwiberg/pr-guardian/blob/autopod/back-quelea/.autopod/screenshots/root.png?raw=true)\n\n## Preview\n\n[",
+  "stratum": "medium",
+  "base_sha": "6c8a3685e5acb699dc8aa6130031d545d1d4d582",
+  "merge_sha": "17005440ac05181caa574a22c30be9f4be4bb97a",
+  "test_files": [
+    "tests/test_pr_review_api.py",
+    "tests/test_repo_review_api.py"
+  ],
+  "src_files": [
+    "src/pr_guardian/api/dashboard.py",
+    "src/pr_guardian/api/review.py"
+  ],
+  "loc": 305,
+  "red_check": {
+    "returncode": 1,
+    "n_failed": 7,
+    "n_error": 0,
+    "n_passed": 10
+  }
+}

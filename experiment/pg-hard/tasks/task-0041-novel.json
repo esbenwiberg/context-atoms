@@ -1,0 +1,24 @@
+{
+  "pr": 41,
+  "title": "feat: Review Entire Repository doesnt work. when clicking \u2018start re...",
+  "body": "## Why\n\nReview Entire Repository doesnt work.\nwhen clicking \u2018start repo review\u2019 button the modal closes, but nothiung happens.\nplease investigate and fix!\nit should basically act like a pr review.\n\n## What\n\nFixed two code quality issues flagged by the validator: (1) removed the orphaned \\`run_repo_review()\\` function from \\`repo_review.py\\` along with its now-unused imports (\\`asyncio\\`, \\`uuid\\`, \\`run_review\\`, \\`ReviewResult\\`), since the API layer bypasses it and calls \\`_run_repo_review_background\\` directly; (2) replaced the always-true test assertion (\\`hasattr(coro, 'cr_code')\\`) in \\`test_create_task_called_with_background_fn\\` with \\`assert coro.__qualname__ == '_run_repo_review_background'\\`, which actually verifies the correct coroutine was scheduled. All 208 tests pass.\n\n## How\n\nUsed \\`coro.__qualname__\\` (instance attribute on coroutine objects) rather than \\`type(coro).__qualname__\\` (which always yields 'coroutine') to meaningfully assert the originating async function. Verified this with a quick Python snippet confirming the distinction.\n\n## Stats\n\n`5 files` \u00b7 `+240` / `-58`\n\n## Preview\n\n[Open preview](http://127.0.0.1:42681)\n\n---\n\ud83e\udd16 Created by [autopod](https://github.com/esbenwiberg/autopod) \u00b7 pod `everyday-squid` \u00b7 profile `guardian-deploy`",
+  "stratum": "novel",
+  "base_sha": "7f5245b6906bd42f1a7da1847611c895a3fe6863",
+  "merge_sha": "80e76ab9d5e111ca7db4402373df75edff0b0b1e",
+  "test_files": [
+    "tests/test_repo_review_api.py"
+  ],
+  "src_files": [
+    "src/pr_guardian/api/review.py",
+    "src/pr_guardian/core/orchestrator.py",
+    "src/pr_guardian/core/repo_review.py",
+    "src/pr_guardian/platform/github.py"
+  ],
+  "loc": 298,
+  "red_check": {
+    "returncode": 1,
+    "n_failed": 2,
+    "n_error": 0,
+    "n_passed": 5
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "pr": 116,
+  "title": "fix(adapter): alias info.program from the discovered Program field",
+  "body": "## Symptom\n\n\\\"Group By \u2192 Program\\\" silently degrades to a flat list against real Dataverse tenants. The Program column renders values fine (cells show \\\"Customer Experience Platform\\\", \\\"Data and AI Foundation\\\", \u2026), the rows even sort by Program, but no group header rows appear.\n\nUser screenshot reproducing this in the live dev tenant: 4 rows under two distinct program values, zero group headers.\n\n## Root cause\n\n\\`src/ranking/groupByProgram.ts\\` and \\`RankingTable.tsx\\`'s \\`activeGroupMode\\` gate both read \\`i.info?.program\\` \u2014 a literal canonical key. The xrm adapter (\\`src/adapters/xrm/mappers.ts:mapInitiative\\`) stores info values under their Dataverse logical names (e.g. \\`pum_program\\`), so the literal lookup always returns \\`undefined\\` for tenants. The fixture happens to use \\`{ \\\"logical\\\": \\\"program\\\", \\\"display\\\": \\\"Program\\\" }\\` literally, which is why every fixture spec passes.\n\nSymmetric pattern already exists for portfolio (line ~231): \\`info.portfolio\\` is normalized regardless of the underlying lookup logical. Program had no such normalization.\n\nPre-existing bug; surfaced more visibly by PR #114 flipping the default \\`groupBy\\` from \\`\\\"portfolio\\\"\\` to \\`\\\"none\\\"\\` \u2014 users now toggle to Program more often and hit it.\n\n## Fix\n\nIn \\`mapInitiative\\`, after the existing info-loop, find the first info field whose display name is \\\"Program\\\" (case-insensitive) and alias its value under \\`info.program\\`. Skip the alias entirely when no such field is discovered \u2014 ke",
+  "stratum": "simple",
+  "base_sha": "26fd0814135b6233bf0661c4ad5c9867bc4e98c7",
+  "merge_sha": "d69bc778664eb4378c090843d21bb1e1dc852585",
+  "test_files": [
+    "tests/adapters/xrmMappers.spec.ts"
+  ],
+  "src_files": [
+    "src/adapters/xrm/mappers.ts"
+  ],
+  "loc": 66,
+  "red_check": {
+    "returncode": 1,
+    "n_failed": 1,
+    "n_error": 0,
+    "n_passed": 27
+  }
+}

@@ -27,7 +27,7 @@ from atoms.schema import load_atoms  # noqa: E402
 from atoms.select import select  # noqa: E402
 from experiment import profiles  # noqa: E402
 from experiment.harness import (  # noqa: E402
-    add_worktree, checkout_paths_from, prepare_worktree, run_pytest,
+    add_worktree, checkout_paths_from, prepare_worktree, run_tests,
 )
 
 PROMPT = """\
@@ -101,9 +101,7 @@ def run_one(task: dict, arm: str, sample: int, atoms, prof,
             model: str, max_turns: int, timeout: int) -> dict:
     base = task["base_sha"]
     test_files = task["test_files"]
-    venv_python = prof.venv_python
-    test_cmd = (f"PYTHONPATH={prof.pythonpath_subdir} {venv_python} -m pytest "
-                + " ".join(test_files) + " -q -p no:cacheprovider")
+    test_cmd = prof.test_cmd_str(test_files)
     issue = build_issue_text(task)
     prompt = PROMPT.format(test_cmd=test_cmd, issue=issue)
 
@@ -112,7 +110,7 @@ def run_one(task: dict, arm: str, sample: int, atoms, prof,
 
     wt = add_worktree(prof.repo, base, label=f"run-{task['pr']}-{arm}-{sample}")
     try:
-        prepare_worktree(wt, prof.prepare_files)
+        prepare_worktree(wt, prof.prepare_files, prof.prepare_symlinks)
         checkout_paths_from(wt, task["merge_sha"], test_files)
 
         args = [
@@ -152,8 +150,7 @@ def run_one(task: dict, arm: str, sample: int, atoms, prof,
         rec.update(parse_stream(stdout))
 
         # Oracle: did the agent make the red tests green?
-        res = run_pytest(wt, venv_python, test_files, timeout=240,
-                         pythonpath=prof.pythonpath(wt.path))
+        res = run_tests(wt, prof, test_files, timeout=240)
         rec["passed"] = res.passed
         rec["test_rc"] = res.returncode
         rec["n_passed"] = res.n_passed

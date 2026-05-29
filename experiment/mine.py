@@ -20,7 +20,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from experiment import profiles  # noqa: E402
 from experiment.harness import (  # noqa: E402
-    add_worktree, checkout_paths_from, git, prepare_worktree, run_pytest,
+    add_worktree, checkout_paths_from, git, prepare_worktree, run_tests,
 )
 
 DEFAULT_MAX_LOC = 150
@@ -61,7 +61,6 @@ def main(argv: list[str] | None = None) -> int:
     repo = prof.repo.resolve()
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
-    venv_python = prof.venv_python.resolve()
 
     want = {"simple": args.want_simple, "medium": args.want_medium, "novel": args.want_novel}
     have = {"simple": 0, "medium": 0, "novel": 0}
@@ -98,10 +97,9 @@ def main(argv: list[str] | None = None) -> int:
         # Verify RED: base + PR's test files only -> tests should NOT all pass.
         wt = add_worktree(repo, base_sha, label=f"mine-{num}")
         try:
-            prepare_worktree(wt, prof.prepare_files)
+            prepare_worktree(wt, prof.prepare_files, prof.prepare_symlinks)
             checkout_paths_from(wt, merge_sha, test_files)
-            res = run_pytest(wt, venv_python, test_files, timeout=240,
-                             pythonpath=prof.pythonpath(wt.path))
+            res = run_tests(wt, prof, test_files, timeout=240)
         finally:
             wt.remove()
 
@@ -118,9 +116,8 @@ def main(argv: list[str] | None = None) -> int:
         # mined task is provably solvable.
         wt2 = add_worktree(repo, merge_sha, label=f"mine-{num}-green")
         try:
-            prepare_worktree(wt2, prof.prepare_files)
-            green = run_pytest(wt2, venv_python, test_files, timeout=240,
-                               pythonpath=prof.pythonpath(wt2.path))
+            prepare_worktree(wt2, prof.prepare_files, prof.prepare_symlinks)
+            green = run_tests(wt2, prof, test_files, timeout=240)
         finally:
             wt2.remove()
         if not green.passed:

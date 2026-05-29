@@ -1,0 +1,24 @@
+{
+  "pr": 49,
+  "title": "fix(scenarios): load orphan rows with null pum_scenarioconfigjson",
+  "body": "## Summary\n\n- **Orphan-scenario fix**: scenarios whose `pum_scenarioconfigjson` is `null` (six rows on the dev tenant \u2014 Alpha, Demo Scenario - Biopharma 2025, Epsilon, Gamma, gdfg, Quarterly Planning i April) used to surface \"may have been deleted\" when opened in CompareModal even though they listed fine. `parseBlob` now treats absent/empty content as an empty blob (defaults fill in); genuinely corrupt JSON strings still return `null`.\n- **demo.json follow-up**: Data Warehouse Modernization `durationDays` 351 \u2192 349 (raw end \u2212 start for the post-reshape 2026-09-01 \u2192 2027-08-16 window is 349). Reviewer follow-up to #48.\n\n## Diagnosis\n\nConfirmed against live Dataverse via `dev:dataverse`: the six \"broken\" rows have `pum_scenarioconfigjson = null` and the rest of their scalar columns are also null \u2014 orphan rows from earlier versions or partial saves. The list query only `$select`s id/name/savedAt so they appear in the dropdown; the load query pulls configJson and `rowToScenario` returned `null`, triggering the misleading error.\n\n## Test plan\n\n- [x] New unit spec `tests/adapters/xrmScenarioStore.orphanLoad.spec.ts` \u2014 3 cases (null, empty string, corrupt non-JSON string).\n- [x] `npm run verify` green (lint, format, typecheck, 563/563 tests, build, bundle-size, bans, parity-coverage, secrets, unused, arch).\n- [x] Reopened the Compare dialog against live Dataverse via the dev:dataverse server \u2014 Alpha now loads with default empty state and diffs cleanly against kra.\n\n<!-- This is an a",
+  "stratum": "medium",
+  "base_sha": "60989478d4ae0baca3a8c1a67386ed4e25ff1196",
+  "merge_sha": "89ea16a9a83757cca0bc5d0cb3280cc1c27cb830",
+  "test_files": [
+    "tests/adapters/_helpers/resolvedScenarioConfig.ts",
+    "tests/adapters/scenarioStore.testRunId.spec.ts",
+    "tests/adapters/xrmScenarioStore.orphanLoad.spec.ts",
+    "tests/adapters/xrmScenarioStore.partialFailure.spec.ts"
+  ],
+  "src_files": [
+    "src/adapters/xrm/scenarioStore.ts"
+  ],
+  "loc": 243,
+  "red_check": {
+    "returncode": 1,
+    "n_failed": 2,
+    "n_error": 0,
+    "n_passed": 6
+  }
+}

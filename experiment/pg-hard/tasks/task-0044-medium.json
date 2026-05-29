@@ -1,0 +1,22 @@
+{
+  "pr": 44,
+  "title": "feat: ",
+  "body": "## Why\n\n\n\n## Validation\n\n| Phase | Status |\n|-------|--------|\n| Build | \u2705 pass |\n| Health check | \u2705 pass |\n**Overall: \u2705 pass** (attempt 1, 18s)\n\n## Stats\n\n`3 files` \u00b7 `+43` / `-19`\n\n## Preview\n\n[Open preview](http://127.0.0.1:25887)\n\n_Note: PR description generated from template \u2014 daemon-side LLM call fell back: `no_anthropic_api_key`._\n\n---\n\ud83e\udd16 Created by [autopod](https://github.com/esbenwiberg/autopod) \u00b7 pod `tense-hippopotamus` \u00b7 profile `guardian`",
+  "stratum": "medium",
+  "base_sha": "149e00bb5404e47fb0b08cf8afc839071ccd2782",
+  "merge_sha": "44667fac91b872d90fbe37a1252a97ffd4d8d631",
+  "test_files": [
+    "tests/test_capability_clusterer.py"
+  ],
+  "src_files": [
+    "src/pr_guardian/platform/ado.py",
+    "src/pr_guardian/wizard/capability_clusterer.py"
+  ],
+  "loc": 62,
+  "red_check": {
+    "returncode": 1,
+    "n_failed": 2,
+    "n_error": 0,
+    "n_passed": 36
+  }
+}

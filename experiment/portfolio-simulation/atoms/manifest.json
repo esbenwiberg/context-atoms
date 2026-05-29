@@ -1,0 +1,428 @@
+[
+  {
+    "file": "rationale/docs-adr-0001-html-web-resource-embedding-md-the-app-ships-a.md",
+    "source": "docs/adr/0001-html-web-resource-embedding.md",
+    "kind": "rationale",
+    "claim": "The app ships as a single-file HTML Web Resource instead of a PCF control because PCF couples the codebase to a churn-prone Microsoft API surface, is field/grid-scoped (wrong shape for a full-page tool), and would force the math layer into the framework's data pipeline."
+  },
+  {
+    "file": "constraint/docs-adr-0001-html-web-resource-embedding-md-parent-xrm-must.md",
+    "source": "docs/adr/0001-html-web-resource-embedding.md",
+    "kind": "constraint",
+    "claim": "`parent.Xrm` must only be accessed inside `src/adapters/xrm/` or `src/platform/host.ts`; any reference outside those paths fails the build."
+  },
+  {
+    "file": "constraint/docs-adr-0001-html-web-resource-embedding-md-pcf-framework-m.md",
+    "source": "docs/adr/0001-html-web-resource-embedding.md",
+    "kind": "constraint",
+    "claim": "PCF framework markers (`ControlContext`, `IInputs`, `IOutputs`, `pcf-scripts`) are banned from `src/` and `package.json` and will fail the build if introduced."
+  },
+  {
+    "file": "rationale/docs-adr-0002-ports-and-adapters-with-math-purity-md-ports-a.md",
+    "source": "docs/adr/0002-ports-and-adapters-with-math-purity.md",
+    "kind": "rationale",
+    "claim": "Ports-and-adapters with math purity was chosen because the math IP is the load-bearing asset \u2014 empirically tuned and locked in by parity tests \u2014 so leaking it into React or platform code would make it untestable in isolation, lock it to xPM, and make refactors risky."
+  },
+  {
+    "file": "constraint/docs-adr-0002-ports-and-adapters-with-math-purity-md-src-mat.md",
+    "source": "docs/adr/0002-ports-and-adapters-with-math-purity.md",
+    "kind": "constraint",
+    "claim": "`src/math/**` must be pure TypeScript with no imports from React, ReactDOM, Zustand, DOM APIs, `parent.Xrm`, or any adapter/platform/state/view folder."
+  },
+  {
+    "file": "constraint/docs-adr-0002-ports-and-adapters-with-math-purity-md-view-ma.md",
+    "source": "docs/adr/0002-ports-and-adapters-with-math-purity.md",
+    "kind": "constraint",
+    "claim": "View, math, state, and entry code may only import `src/adapters/types.ts` and the `src/adapters/index.ts` barrel \u2014 direct imports from `src/adapters/fixture/**` or `src/adapters/xrm/**` are forbidden."
+  },
+  {
+    "file": "constraint/docs-adr-0003-in-memory-zustand-no-browser-persistence-md-no.md",
+    "source": "docs/adr/0003-in-memory-zustand-no-browser-persistence.md",
+    "kind": "constraint",
+    "claim": "No browser-side storage (localStorage, sessionStorage, IndexedDB) may be used anywhere in src/; a refresh must produce a clean slate."
+  },
+  {
+    "file": "constraint/docs-adr-0003-in-memory-zustand-no-browser-persistence-md-sc.md",
+    "source": "docs/adr/0003-in-memory-zustand-no-browser-persistence.md",
+    "kind": "constraint",
+    "claim": "Scenario persistence is the only persistence layer and must be backed by Dataverse RBAC via src/scenarios/ and src/adapters/xrm/scenarioStore.ts; all other store slices (weights, filters, overrides, panel state) are ephemeral."
+  },
+  {
+    "file": "rationale/docs-adr-0003-in-memory-zustand-no-browser-persistence-md-zu.md",
+    "source": "docs/adr/0003-in-memory-zustand-no-browser-persistence.md",
+    "kind": "rationale",
+    "claim": "Zustand was chosen as the sole state container over Redux Toolkit (too heavy, ~13 kB vs ~1 kB) and React Context + reducers (re-render granularity breaks down beyond ~3 slices)."
+  },
+  {
+    "file": "rationale/docs-adr-0004-parity-test-workflow-md-captured-fixture-parit.md",
+    "source": "docs/adr/0004-parity-test-workflow.md",
+    "kind": "rationale",
+    "claim": "Captured-fixture parity tests are used as the math contract instead of hand-crafted unit tests because hand-written tests encode the developer's reading of the code, not the intended behavior \u2014 empirically-tuned math modules have subtly wrong intent-reads."
+  },
+  {
+    "file": "constraint/docs-adr-0004-parity-test-workflow-md-every-module-in-src-ma.md",
+    "source": "docs/adr/0004-parity-test-workflow.md",
+    "kind": "constraint",
+    "claim": "Every module in `src/math/` must have a matching parity spec under `tests/parity/` driven by captured fixtures in `tests/fixtures/`; `tools/check-parity-coverage.mjs` fails the build if any math module lacks one."
+  },
+  {
+    "file": "constraint/docs-adr-0004-parity-test-workflow-md-demand-distribution-pr.md",
+    "source": "docs/adr/0004-parity-test-workflow.md",
+    "kind": "constraint",
+    "claim": "Demand-distribution primitives (`distributeSpan`, `carveSpanHole`) are proven via unit tests against analytic identities rather than captured fixtures because POC divergence is authorised for that surface (per ADR-0011); the parity-coverage gate filename contract still applies."
+  },
+  {
+    "file": "constraint/docs-adr-0005-bundle-size-budget-md-the-bundle-size-hard-cap.md",
+    "source": "docs/adr/0005-bundle-size-budget.md",
+    "kind": "constraint",
+    "claim": "The bundle-size hard cap is the Dataverse Web Resource upload limit (5 MB) applied to the raw `dist/index.html` artifact; gzip size is not gated because Dataverse enforces upload size on the uncompressed artifact, and a 2 MB soft warning sits below the hard cap."
+  },
+  {
+    "file": "rationale/docs-adr-0005-bundle-size-budget-md-a-hard-failing-ci-gate-n.md",
+    "source": "docs/adr/0005-bundle-size-budget.md",
+    "kind": "rationale",
+    "claim": "A hard-failing CI gate (not a soft warning) was chosen for bundle-size enforcement because soft warnings get ignored and bundle drift accumulates one small PR at a time in a way that code review reliably misses."
+  },
+  {
+    "file": "constraint/docs-adr-0005-bundle-size-budget-md-every-bundle-size-budget.md",
+    "source": "docs/adr/0005-bundle-size-budget.md",
+    "kind": "constraint",
+    "claim": "Every bundle-size budget raise must update the constants in `tools/check-bundle-size.mjs` AND add an inline note in the file's comment header recording the date, driving feature, new measurements, and remaining headroom; a raise without this note is a process bug and must be reverted or amended."
+  },
+  {
+    "file": "rationale/docs-adr-0006-xpm-css-token-theming-md-css-custom-properties.md",
+    "source": "docs/adr/0006-xpm-css-token-theming.md",
+    "kind": "rationale",
+    "claim": "CSS custom properties (`--xpm-*`) were chosen over SCSS variables because only CSS custom properties participate in the runtime cascade, allowing the Dataverse/xPM host to override theme tokens without shipping new app code."
+  },
+  {
+    "file": "constraint/docs-adr-0006-xpm-css-token-theming-md-all-css-color-values-.md",
+    "source": "docs/adr/0006-xpm-css-token-theming.md",
+    "kind": "constraint",
+    "claim": "All CSS color values outside `src/styles/theme.css` must reference `--xpm-*` tokens; hardcoded hex/rgb/hsl literals in `src/**/*.{ts,tsx,css}` are banned and enforced by `tools/check-bans.mjs` as part of `npm run verify`."
+  },
+  {
+    "file": "rationale/docs-adr-0007-date-overrides-keying-md-dateoverrides-is-keye.md",
+    "source": "docs/adr/0007-date-overrides-keying.md",
+    "kind": "rationale",
+    "claim": "dateOverrides is keyed by Initiative.id (not row index, not a scenario-composite) because Initiative.id is the only stable key that survives sort changes and adapter re-fetches."
+  },
+  {
+    "file": "constraint/docs-adr-0007-date-overrides-keying-md-every-action-that-mut.md",
+    "source": "docs/adr/0007-date-overrides-keying.md",
+    "kind": "constraint",
+    "claim": "Every action that mutates dateOverrides must return a new Map instance (immutable-style) so Zustand detects the change by reference equality."
+  },
+  {
+    "file": "rationale/docs-adr-0007-date-overrides-keying-md-dateoverrides-stores-.md",
+    "source": "docs/adr/0007-date-overrides-keying.md",
+    "kind": "rationale",
+    "claim": "dateOverrides stores Date objects (not ISO strings) to avoid a serialize/parse round-trip on every render and to match the shape getEffectiveDates.ts already expects."
+  },
+  {
+    "file": "rationale/docs-adr-0008-admin-managed-profiles-md-profile-configuratio.md",
+    "source": "docs/adr/0008-admin-managed-profiles.md",
+    "kind": "rationale",
+    "claim": "Profile configuration is stored in a Dataverse table (`pum_portfoliosimulationprofile`) rather than environment variables, browser localStorage, PCF control config, or an in-app JSON editor because those alternatives are either banned by prior ADRs (ADR 0001 bans PCF, ADR 0003 bans browser persistence) or too confusing for the admin audience."
+  },
+  {
+    "file": "constraint/docs-adr-0008-admin-managed-profiles-md-saved-scenarios-must.md",
+    "source": "docs/adr/0008-admin-managed-profiles.md",
+    "kind": "constraint",
+    "claim": "Saved scenarios must carry a `pum_profilekey` column so they are scoped to the profile they were created under, preventing cross-profile data leakage."
+  },
+  {
+    "file": "constraint/docs-adr-0008-admin-managed-profiles-md-tools-pack-solution-.md",
+    "source": "docs/adr/0008-admin-managed-profiles.md",
+    "kind": "constraint",
+    "claim": "`tools/pack-solution.mjs` must fail the build if the default profile seed row is absent, malformed, or not marked as default, to prevent accidental removal during solution packaging."
+  },
+  {
+    "file": "constraint/docs-adr-0009-publisher-prefix-projectum-md-every-custom-sch.md",
+    "source": "docs/adr/0009-publisher-prefix-projectum.md",
+    "kind": "constraint",
+    "claim": "Every custom schema component this repository contributes \u2014 tables, columns, Web Resources, option-sets \u2014 must use the `pum_` prefix and be declared under the Projectum publisher in `solution/src/Other/Solution.xml`."
+  },
+  {
+    "file": "rationale/docs-adr-0010-resource-role-required-md-the-filter-and-warn-.md",
+    "source": "docs/adr/0010-resource-role-required.md",
+    "kind": "rationale",
+    "claim": "The filter-and-warn approach for roleless resources was rejected because it silently dropped ~45% of demand hours by routing orphan-targeted demand to bucket keys that no role row walked."
+  },
+  {
+    "file": "constraint/docs-adr-0010-resource-role-required-md-resources-without-pu.md",
+    "source": "docs/adr/0010-resource-role-required.md",
+    "kind": "constraint",
+    "claim": "Resources without `pum_role` must be keyed to the sentinel `UNASSIGNED_ROLE_KEY` and aggregated into a single synthesised bucket \u2014 never filtered out and never split into per-resource rows."
+  },
+  {
+    "file": "constraint/docs-adr-0010-resource-role-required-md-useheatmapdata-must-.md",
+    "source": "docs/adr/0010-resource-role-required.md",
+    "kind": "constraint",
+    "claim": "`useHeatmapData` must receive the translated Unassigned bucket label via an `unassignedRoleLabel` parameter rather than calling `t()` internally, to preserve the math/IP boundary."
+  },
+  {
+    "file": "rationale/docs-adr-0011-demand-distribution-and-override-spans-md-cont.md",
+    "source": "docs/adr/0011-demand-distribution-and-override-spans.md#context",
+    "kind": "rationale",
+    "claim": "Demand overrides are stored as continuous date-range spans rather than bucketed period values to eliminate the lossy granularity migrator that flattened non-uniform edits on round-trips."
+  },
+  {
+    "file": "constraint/docs-adr-0011-demand-distribution-and-override-spans-md-cont.md",
+    "source": "docs/adr/0011-demand-distribution-and-override-spans.md#context",
+    "kind": "constraint",
+    "claim": "All demand and capacity period bucketing must use `workdaysInPeriod` proportions, not calendar-day proportions, to avoid 2\u20135% drift between demand and capacity math."
+  },
+  {
+    "file": "rationale/docs-adr-0011-demand-distribution-and-override-spans-md-cont.md",
+    "source": "docs/adr/0011-demand-distribution-and-override-spans.md#context",
+    "kind": "rationale",
+    "claim": "Three near-identical bucketing routines (`computeRoleDemandForPeriod`, `committedHoursInPeriod`, override `Map` + `migrateDemandOverrides`) were consolidated into `distributeSpan` because they shared the same root cause: storing bucketed period values instead of the continuous spans the data actually has."
+  },
+  {
+    "file": "rationale/docs-adr-0011-demand-distribution-and-override-spans-md-deci.md",
+    "source": "docs/adr/0011-demand-distribution-and-override-spans.md#decision",
+    "kind": "rationale",
+    "claim": "Demand is stored as continuous {start, end, hours} spans rather than pre-bucketed period values so that switching granularity (Q\u2194M) never corrupts or loses override edits."
+  },
+  {
+    "file": "constraint/docs-adr-0011-demand-distribution-and-override-spans-md-deci.md",
+    "source": "docs/adr/0011-demand-distribution-and-override-spans.md#decision",
+    "kind": "constraint",
+    "claim": "The demandOverrides store slice is append-only: overrides are never mutated in place; each user commit appends a new DemandOverrideSpan tagged with Date.now()."
+  },
+  {
+    "file": "constraint/docs-adr-0011-demand-distribution-and-override-spans-md-deci.md",
+    "source": "docs/adr/0011-demand-distribution-and-override-spans.md#decision",
+    "kind": "constraint",
+    "claim": "Override overlap is resolved per calendar date, not per span: buildContributions folds override layers in createdAt order so that two overlapping overrides share intent along the specific days each owns."
+  },
+  {
+    "file": "rationale/docs-adr-0011-demand-distribution-and-override-spans-md-alte.md",
+    "source": "docs/adr/0011-demand-distribution-and-override-spans.md#alternatives-considered",
+    "kind": "rationale",
+    "claim": "Continuous span storage was chosen over period-bucketed storage because period-bucketed storage is information-losing when interpolating between granularities \u2014 the bug was in the storage shape itself, not in migration code."
+  },
+  {
+    "file": "rationale/docs-adr-0011-demand-distribution-and-override-spans-md-alte.md",
+    "source": "docs/adr/0011-demand-distribution-and-override-spans.md#alternatives-considered",
+    "kind": "rationale",
+    "claim": "Per-day storage was rejected in favour of continuous spans because spans are the natural shape of Dataverse `pum_propose` rows and aligning storage with source data avoids ~30\u00d7 entry fragmentation and read-time coalescing."
+  },
+  {
+    "file": "rationale/docs-adr-0011-demand-distribution-and-override-spans-md-alte.md",
+    "source": "docs/adr/0011-demand-distribution-and-override-spans.md#alternatives-considered",
+    "kind": "rationale",
+    "claim": "The `curve` front/back/even weighting on Resource was removed because it was a POC-era synthesis to generate demand shape from monthly totals; with `pum_propose` spans flowing through directly, the data is the curve and the field has no input."
+  },
+  {
+    "file": "constraint/docs-adr-0011-demand-distribution-and-override-spans-md-cons.md",
+    "source": "docs/adr/0011-demand-distribution-and-override-spans.md#consequences",
+    "kind": "constraint",
+    "claim": "Legacy scenario override blobs (Map<key, hours> shape) are silently discarded on load with no upgrade reader."
+  },
+  {
+    "file": "rationale/docs-adr-0011-demand-distribution-and-override-spans-md-cons.md",
+    "source": "docs/adr/0011-demand-distribution-and-override-spans.md#consequences",
+    "kind": "rationale",
+    "claim": "distributeSpan and carveSpanHole are proven by analytic-identity unit tests rather than captured POC-parity fixtures, as an explicit carve-out from ADR-0004."
+  },
+  {
+    "file": "constraint/docs-adr-0011-demand-distribution-and-override-spans-md-cons.md",
+    "source": "docs/adr/0011-demand-distribution-and-override-spans.md#consequences",
+    "kind": "constraint",
+    "claim": "Demand overrides must compose per-date so that a broad quarterly edit and a finer monthly correction can coexist without either silently clobbering the other."
+  },
+  {
+    "file": "rationale/docs-adr-0011-demand-distribution-and-override-spans-md-rela.md",
+    "source": "docs/adr/0011-demand-distribution-and-override-spans.md#relationship-to-adr-0004",
+    "kind": "rationale",
+    "claim": "distributeSpan.ts parity spec asserts analytic identities rather than replaying captured POC fixtures because the POC contains the same bug the new code fixes, making POC-captured fixtures the wrong oracle."
+  },
+  {
+    "file": "constraint/docs-adr-0011-demand-distribution-and-override-spans-md-rela.md",
+    "source": "docs/adr/0011-demand-distribution-and-override-spans.md#relationship-to-adr-0004",
+    "kind": "constraint",
+    "claim": "tools/check-parity-coverage.mjs still enforces the src/math/<name>.ts \u2192 tests/parity/<name>.spec.ts filename contract even though ADR-0011 relaxes the required spec content for distributeSpan."
+  },
+  {
+    "file": "constraint/docs-adr-0011-demand-distribution-and-override-spans-md-enfo.md",
+    "source": "docs/adr/0011-demand-distribution-and-override-spans.md#enforcement",
+    "kind": "constraint",
+    "claim": "src/math/distributeSpan.ts is the sole bucketing primitive for all demand spans; re-introducing any parallel bucketer is banned."
+  },
+  {
+    "file": "constraint/docs-adr-0011-demand-distribution-and-override-spans-md-enfo.md",
+    "source": "docs/adr/0011-demand-distribution-and-override-spans.md#enforcement",
+    "kind": "constraint",
+    "claim": "Demand override storage must use the DemandOverrideSpan[] array shape in src/state/store.ts; the former Map<string, number> shape is banned."
+  },
+  {
+    "file": "constraint/docs-adr-0011-demand-distribution-and-override-spans-md-enfo.md",
+    "source": "docs/adr/0011-demand-distribution-and-override-spans.md#enforcement",
+    "kind": "constraint",
+    "claim": "References to curve: or Resource.curve are banned from src/ and docs/adr/ to prevent resurrection of the deleted demand-curve model."
+  },
+  {
+    "file": "rationale/docs-adr-0011-demand-distribution-and-override-spans-md-refe.md",
+    "source": "docs/adr/0011-demand-distribution-and-override-spans.md#references",
+    "kind": "rationale",
+    "claim": "buildContributions uses a layered render-time carving pattern borrowed from PowerHeatmap's allocationBreakdownProcessor, parameterised on two pure primitives so all math stays in src/math/."
+  },
+  {
+    "file": "constraint/docs-adr-readme-md-a-decision-earns-adr-status-only-when-bac.md",
+    "source": "docs/adr/README.md",
+    "kind": "constraint",
+    "claim": "A decision earns ADR status only when backed by a check script, dependency-cruiser rule, or build-config setting that makes it irreversible without ceremony; uncheckable decisions belong in CLAUDE.md instead."
+  },
+  {
+    "file": "constraint/docs-adr-readme-md-every-module-under-src-math-must-have-a-c.md",
+    "source": "docs/adr/README.md",
+    "kind": "constraint",
+    "claim": "Every module under src/math/ must have a corresponding parity spec in tests/parity/; the check-parity-coverage.mjs gate enforces this in CI."
+  },
+  {
+    "file": "constraint/docs-adr-readme-md-the-production-bundle-has-a-5-mb-hard-cap.md",
+    "source": "docs/adr/README.md",
+    "kind": "constraint",
+    "claim": "The production bundle has a 5 MB hard cap (Dataverse Web Resource upload limit) and a 2 MB soft warning, both enforced by tools/check-bundle-size.mjs; raising the soft threshold requires a note in that file."
+  },
+  {
+    "file": "rationale/architecture-md-the-app-ships-as-a-single-self-contained-htm.md",
+    "source": "ARCHITECTURE.md",
+    "kind": "rationale",
+    "claim": "The app ships as a single self-contained HTML file because the xPM embedding model requires an HTML Web Resource; PCF was evaluated and explicitly ruled out."
+  },
+  {
+    "file": "constraint/architecture-md-only-src-adapters-index-ts-may-select-the-ac.md",
+    "source": "ARCHITECTURE.md",
+    "kind": "constraint",
+    "claim": "Only src/adapters/index.ts may select the active adapter implementation; all other modules must import exclusively from the contract in src/adapters/types.ts."
+  },
+  {
+    "file": "constraint/architecture-md-localstorage-must-never-be-used-as-a-source-.md",
+    "source": "ARCHITECTURE.md",
+    "kind": "constraint",
+    "claim": "localStorage must never be used as a source of truth; all runtime state lives in-memory in the Zustand store at src/state/store.ts."
+  },
+  {
+    "file": "rationale/claude-md-self-validation-is-non-negotiable-the-5-mb-hard-ca.md",
+    "source": "CLAUDE.md#self-validation-is-non-negotiable",
+    "kind": "rationale",
+    "claim": "The 5 MB hard cap on dist/index.html exists because Dataverse Web Resource uploads cannot exceed 5 MB; 2 MB is a soft warning threshold."
+  },
+  {
+    "file": "constraint/claude-md-self-validation-is-non-negotiable-src-math-modules.md",
+    "source": "CLAUDE.md#self-validation-is-non-negotiable",
+    "kind": "constraint",
+    "claim": "src/math/ modules must never import React, DOM globals, or platform/adapter code; this purity is enforced by dependency-cruiser."
+  },
+  {
+    "file": "constraint/claude-md-self-validation-is-non-negotiable-every-src-math-n.md",
+    "source": "CLAUDE.md#self-validation-is-non-negotiable",
+    "kind": "constraint",
+    "claim": "Every src/math/<name>.ts file must have a corresponding tests/parity/<name>.spec.ts; missing coverage is a CI gate failure."
+  },
+  {
+    "file": "constraint/claude-md-hard-rules-the-trip-wires-the-embedding-model-is-a.md",
+    "source": "CLAUDE.md#hard-rules-the-trip-wires",
+    "kind": "constraint",
+    "claim": "The embedding model is an HTML Web Resource, not a PCF control; switching frameworks requires explicit user approval."
+  },
+  {
+    "file": "constraint/claude-md-hard-rules-the-trip-wires-client-side-state-must-l.md",
+    "source": "CLAUDE.md#hard-rules-the-trip-wires",
+    "kind": "constraint",
+    "claim": "Client-side state must live in in-memory Zustand only; localStorage must never be used as a source of truth."
+  },
+  {
+    "file": "constraint/claude-md-hard-rules-the-trip-wires-fixture-data-must-only-c.md",
+    "source": "CLAUDE.md#hard-rules-the-trip-wires",
+    "kind": "constraint",
+    "claim": "Fixture data must only contain shapes that are faithful subsets of real Dataverse pum_* columns \u2014 no ergonomic-but-fake fields."
+  },
+  {
+    "file": "constraint/claude-md-conventions-all-code-under-src-math-must-be-pure-t.md",
+    "source": "CLAUDE.md#conventions",
+    "kind": "constraint",
+    "claim": "All code under src/math/ must be pure TypeScript with no React, Xrm, DOM, or side-effect imports."
+  },
+  {
+    "file": "constraint/claude-md-conventions-view-and-math-layers-must-only-import-.md",
+    "source": "CLAUDE.md#conventions",
+    "kind": "constraint",
+    "claim": "View and math layers must only import adapter types from src/adapters/types.ts and must never directly import src/adapters/fixture or src/adapters/xrm."
+  },
+  {
+    "file": "constraint/claude-md-conventions-the-build-must-produce-a-single-file-d.md",
+    "source": "CLAUDE.md#conventions",
+    "kind": "constraint",
+    "claim": "The build must produce a single-file dist/index.html with no dynamic chunks, enforced by vite-plugin-singlefile and CI."
+  },
+  {
+    "file": "constraint/claude-md-test-coverage-map-what-s-guarded-vs-not-every-new-.md",
+    "source": "CLAUDE.md#test-coverage-map-what-s-guarded-vs-not",
+    "kind": "constraint",
+    "claim": "Every new UI surface must ship with a matching component test; extending the three known untested surfaces is mandatory gap-closure."
+  },
+  {
+    "file": "rationale/claude-md-test-coverage-map-what-s-guarded-vs-not-src-math-f.md",
+    "source": "CLAUDE.md#test-coverage-map-what-s-guarded-vs-not",
+    "kind": "rationale",
+    "claim": "src/math/* functions are validated via parity fixtures in tests/fixtures/poc-parity/ rather than ad-hoc unit tests, to assert behavioral equivalence with the original PoC implementation."
+  },
+  {
+    "file": "constraint/claude-md-where-context-lives-changes-to-the-pum-portfoliosi.md",
+    "source": "CLAUDE.md#where-context-lives",
+    "kind": "constraint",
+    "claim": "Changes to the `pum_portfoliosimulationprofile` Dataverse schema or admin-profiles UX must be preceded by reading `specs/admin-managed-profiles/` and ADR 0008."
+  },
+  {
+    "file": "rationale/claude-md-where-context-lives-tools-pack-solution-mjs-uses-t.md",
+    "source": "CLAUDE.md#where-context-lives",
+    "kind": "rationale",
+    "claim": "`tools/pack-solution.mjs` uses the system `zip` command instead of the Dataverse `pac` CLI to build the managed and unmanaged solution ZIPs."
+  },
+  {
+    "file": "constraint/claude-md-where-context-lives-the-smoke-fixture-playwright-t.md",
+    "source": "CLAUDE.md#where-context-lives",
+    "kind": "constraint",
+    "claim": "The smoke-fixture Playwright tests rely on `playwright.fixture.config.ts` owning the vite-preview server lifecycle; tests must not spawn or manage their own dev server."
+  },
+  {
+    "file": "constraint/contributing-md-the-embedding-model-for-this-app-is-an-html-.md",
+    "source": "CONTRIBUTING.md",
+    "kind": "constraint",
+    "claim": "The embedding model for this app is an HTML Web Resource; PCF must never be introduced."
+  },
+  {
+    "file": "constraint/contributing-md-all-user-visible-strings-must-be-routed-thro.md",
+    "source": "CONTRIBUTING.md",
+    "kind": "constraint",
+    "claim": "All user-visible strings must be routed through t() from src/i18n and all colors must use --xpm-* CSS custom properties defined in src/styles/theme.css; inline hex values are banned everywhere else."
+  },
+  {
+    "file": "rationale/contributing-md-npm-run-verify-eleven-sequential-gates-is-th.md",
+    "source": "CONTRIBUTING.md",
+    "kind": "rationale",
+    "claim": "npm run verify (eleven sequential gates) is the definition of done; passing typecheck alone is explicitly insufficient, and UI changes additionally require manual visual verification against the running dev server."
+  },
+  {
+    "file": "constraint/readme-md-the-production-build-must-be-a-single-self-contain.md",
+    "source": "README.md",
+    "kind": "constraint",
+    "claim": "The production build must be a single self-contained HTML file under 5 MB because Dataverse Web Resources have a hard 5 MB upload limit."
+  },
+  {
+    "file": "rationale/readme-md-github-ci-authenticates-to-dataverse-via-oidc-toke.md",
+    "source": "README.md",
+    "kind": "rationale",
+    "claim": "GitHub CI authenticates to Dataverse via OIDC token exchange (ClientAssertionCredential) rather than a long-lived client secret so no durable credential is stored on the runner."
+  },
+  {
+    "file": "constraint/readme-md-math-ip-and-view-code-must-never-import-the-data-s.md",
+    "source": "README.md",
+    "kind": "constraint",
+    "claim": "Math IP and view code must never import the data source directly \u2014 all data dependencies must flow through the types contract in src/adapters/types.ts."
+  }
+]

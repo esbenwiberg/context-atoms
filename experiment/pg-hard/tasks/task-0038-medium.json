@@ -1,0 +1,23 @@
+{
+  "pr": 38,
+  "title": "Wizard review-mode rollout \u2014 prototypes + Phase 1\u20134 (full stack to main)",
+  "body": "## Summary\n\nThis consolidates **all the wizard review-mode work** from this thread into a single merge against `main`. The PRs landed on stacked branches as we went \u2014 none of them reached `main`. This retargets the topmost branch (`claude/phase4-narrative-generation`, which sits at the top of the stack) so all 14 commits drop onto main with one merge button.\n\n## What lands\n\n**Design exploration (commits from PRs #26\u201329, #31)**\n- Six standalone HTML prototypes in `prototypes/` (Decision Queue, Narrative Briefing, Capability Briefing, Capability Narrative, Capability Queue, Review Wizard).\n- `index.html` launcher.\n- `StaticFiles` mount at `/prototypes/` so they're reachable on the dev server.\n\n**Phase 1 \u2014 Wizard end-to-end** *(was PR #34)*\n- New `/reviews/{review_id}/wizard` route + `dashboard/human_wizard.html` template.\n- Capabilities computed by the same path-prefix heuristic the chapter view uses.\n- Decisions = surfaced (non-dismissed) findings, sorted by severity per capability.\n- W/W/H stubbed from PR title + body + file-role distribution.\n- Per-concern `Accept / Fix / Dismiss / clear` wired to the existing dismissal API (`acknowledged / will_fix / false_positive`). State is shared bidirectionally with the chapter view.\n- Final-verdict buttons (`Approve / Approve with fixes / Decline`) wired to a new `POST /api/dashboard/reviews/{id}/submit-verdict` endpoint that posts to GitHub or Azure DevOps via the existing `PlatformAdapter` factory.\n- Audit trail via `pipeline_log` f",
+  "stratum": "medium",
+  "base_sha": "57a2ec8ebd4c733e44b3a6818312778550d67ac9",
+  "merge_sha": "5f90eda2976ed814b209d89b9b606c3c98f66651",
+  "test_files": [
+    "tests/test_capabilities_endpoint.py",
+    "tests/test_capability_clusterer.py"
+  ],
+  "src_files": [
+    "src/pr_guardian/api/dashboard.py",
+    "src/pr_guardian/wizard/capability_clusterer.py"
+  ],
+  "loc": 252,
+  "red_check": {
+    "returncode": 1,
+    "n_failed": 12,
+    "n_error": 0,
+    "n_passed": 25
+  }
+}
