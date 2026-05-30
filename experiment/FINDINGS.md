@@ -65,15 +65,41 @@ cleanly-isolatable single-package tasks because real app changes are cross-cutti
 This is *also* why the bet's home turf (complex apps) is hard to test this way, and
 is the biggest caveat on the verdict.
 
+## External corroboration (ETH Zürich, arXiv 2602.11988, Feb 2026)
+
+Independently confirmed on real codebases — "Evaluating AGENTS.md" built AGENTbench
+(138 real Python tasks from repos that use context files) + SWE-bench Lite:
+
+- **LLM-generated context files → −0.5% (SWE-bench) / −2% (AGENTbench) success, +20%
+  cost.** Our atoms are doc-import / LLM-extracted = this bucket. Our null + cost
+  penalty match it. Two independent setups, same answer.
+- **Human-written context files → +4% success.** The one positive signal — and it's
+  the regime we did NOT test (decision 005, human pre-work capture). Auto-extraction
+  (our atoms, their LLM-generated) is the part that doesn't work, in both studies.
+- Behavioural: agents follow instructions faithfully, but many are unnecessary for
+  the task; style/test directives make tasks *more* complex. Matches our
+  exploration-up, cost-up, success-flat.
+
+### Power caveat (important)
+This is a **small-effects regime (±0.5–4%)**, and our experiment was **underpowered
+to detect a 4% effect**: sqlglot had ~48 runs/arm at 69% pass → delta noise ~±9%
+(2 task-flips of 24 = ±4% is literally noise). Therefore:
+- We can **firmly reject the design's actual bet** — *"fundamentally different
+  behaviour."* No large effect exists in our data or ETH's. That framing was wrong.
+- We **cannot** rule out the small (~4%) human-authored effect — untested here and
+  below our detection threshold regardless.
+
 ## Recommendation
 
-- **Do not build** the selector graph walk, kind ordering, relevance scoring,
-  distill, or MCP. The foundation is unproven and the one clean test says null.
-- If revisiting, change one variable from "honest limits" above and re-run — the
-  harness now supports pytest + vitest, single-package and monorepo, two models, in
-  ~an afternoon per pilot.
+- **Do not build** the selector graph walk, kind ordering, relevance scoring, and
+  especially **not the distill / auto-extraction pipeline** — both this experiment
+  and ETH find LLM-generated/auto-extracted context is neutral-to-negative.
+- **The only evidenced win is human-authored context (~4%, ETH).** If anything is
+  worth pursuing it's decision 005 (human pre-work intent capture) — small payoff,
+  untested here, and it needs a *much* better-powered eval (hundreds of tasks) to
+  measure a single-digit effect. Auto-extraction is a dead end.
 - The atom *format* + *lint* + *flat select* (the `atoms/` CLI) are cheap, correct,
-  and harmless to keep as a writing aid; they are not the mechanism.
+  and harmless to keep as a human writing aid; they are not the mechanism.
 
 ## Provenance
 Autonomous run 2026-05-29/30, per `AUTONOMOUS_PLAN.md`. Raw per-run data in each
