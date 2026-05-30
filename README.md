@@ -1,10 +1,29 @@
 # context-atoms
 
+> ## ⚰️ Dead on arrival
+>
+> **The central bet does not hold. We tested it before building the mechanism, and it failed.**
+>
+> Anchor-matched atom injection produced **+0.0pp success delta** across **250 ablation
+> runs** (4 repos, 2 languages, 2 models) — including on the *one* benchmark with real
+> headroom (sqlglot, 69% pass). It never reduced exploration (ratio 0.95–1.15) and added
+> 0–15% cost. Even with the test rigged in its favour (perfectly-scoped *oracle* atoms),
+> nothing moved.
+>
+> Independently corroborated: ETH Zürich's [AGENTS.md study](https://arxiv.org/abs/2602.11988)
+> finds **LLM-generated / auto-extracted context is neutral-to-negative** (−0.5/−2% success,
+> +20% cost) on real codebases. The only thing with positive evidence is **human-authored**
+> context (~4%) — which is *not* what this design auto-extracts.
+>
+> **Verdict: do not build the selector / graph / distill / MCP.** Full autopsy →
+> [`experiment/FINDINGS.md`](experiment/FINDINGS.md). The harness lives on; the mechanism doesn't.
+
 Tool-neutral, repo-local context-persistence for AI coding agents. Small,
 anchored, kind-typed markdown atoms instead of heavy always-on spec files.
 
-This repo holds **the design** and **a running experiment that tests its central
-bet before any production tooling is built**. It is not (yet) a shipping tool.
+This repo held **the design** and **an experiment that tested its central bet
+before any production tooling was built**. The experiment came back negative (above).
+It is not — and per the evidence, should not become — a shipping tool.
 
 ## The bet
 
